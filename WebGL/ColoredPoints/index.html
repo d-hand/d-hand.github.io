@@ -1,0 +1,178 @@
+﻿<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
+      
+    <title>ColoredPoints</title>
+
+    <script id="shader-vs" type="x-shader/x-vertex">
+
+        attribute vec4 a_Position;
+
+        void main() {
+            gl_Position = a_Position;
+            gl_PointSize = 10.0;
+        }
+    </script>
+
+
+    <script id="shader-fs" type="x-shader/x-fragment">
+
+        //спецификатор точности передаваемым переменным (mediump средняя)
+        precision mediump float;
+
+        uniform vec4 u_FragColor;
+
+        void main() {
+            gl_FragColor = u_FragColor;
+        }  
+    </script>  
+
+  <script type="text/javascript">   
+
+      var gl;
+
+      function initGL(canvas) {
+          try {
+              gl = canvas.getContext("experimental-webgl");
+              gl.viewportWidth = canvas.width;
+              gl.viewportHeight = canvas.height;
+          } catch (e) {
+          }
+          if (!gl) {
+              alert("Could not initialise WebGL, sorry :-(");
+          }
+      }
+
+    function initShaders() {
+        var getShader = function (gl, id) {
+            var shaderScript = document.getElementById(id);
+            if (!shaderScript) {
+                return null;
+            }
+
+            var str = "";
+            var k = shaderScript.firstChild;
+            while (k) {
+                if (k.nodeType == 3) {
+                    str += k.textContent;
+                }
+                k = k.nextSibling;
+            }
+
+            var shader;
+            if (shaderScript.type == "x-shader/x-fragment") {
+                shader = gl.createShader(gl.FRAGMENT_SHADER);
+            } else if (shaderScript.type == "x-shader/x-vertex") {
+                shader = gl.createShader(gl.VERTEX_SHADER);
+            } else {
+                return null;
+            }
+
+            gl.shaderSource(shader, str);
+            gl.compileShader(shader);
+
+            if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+                alert(gl.getShaderInfoLog(shader));
+                return null;
+            }
+
+            return shader;
+        }
+
+        //получаем шрейдеры описанные выше (shader-fs, shader-vs) 
+        var vertexShader = getShader(gl, "shader-vs");        
+        var fragmentShader = getShader(gl, "shader-fs");  
+
+
+        //Атачим шрейдеры к WebGL
+        shaderProgram = gl.createProgram();
+        gl.attachShader(shaderProgram, vertexShader);
+        gl.attachShader(shaderProgram, fragmentShader);
+        gl.linkProgram(shaderProgram);
+
+        if (!gl.getProgramParameter(shaderProgram, gl.LINK_STATUS)) {
+            alert("Could not initialise shaders");
+        }
+
+        gl.useProgram(shaderProgram);
+        gl.program = shaderProgram;
+    }
+
+    
+    function main() {
+        // Получить ссылку на элемент <canvas>
+        var canvas = document.getElementById('webgl');
+        
+        // Получить контекст отображения для WebGL
+        initGL(canvas);
+        
+        // Инициализировать шейдеры
+        initShaders();
+
+        // Получить ссылку на переменную-атрибут a_Position
+        var a_Position = gl.getAttribLocation(gl.program, 'a_Position');
+
+        // Получить ссылку на переменную-атрибут u_FragColor
+        var u_FragColor = gl.getUniformLocation(gl.program, 'u_FragColor');
+
+
+        // Зарегистрировать функцию (обработчик) для вызова по щелчку мышью
+        var points = []; // Массив с координатами точек, где выполнялись щелчки
+        canvas.onmousedown = function(ev) {
+            //вычисляем координаты точки
+            var x = ev.clientX; // координата X указателя мыши
+            var y = ev.clientY; // координата Y указателя мыши
+            var rect = ev.target.getBoundingClientRect();            
+            x = ((x - rect.left) - canvas. width/2)/(canvas.width/2);
+            y = (canvas. height/2 - (y - rect.top))/(canvas.height/2);            
+            
+            //вычисляем цвет точки
+            var color = [];
+            if(x >= 0.0 && y >= 0.0) { 
+                color = [1.0, 0.0, 0.0, 1.0]; 
+            } else if(x < 0.0 && y < 0.0) { 
+                color = [0.0, 1.0, 0.0, 1.0]; 
+            } else if (x > 0.0 && y < 0.0) { 
+                color = [0.0, 0.0, 1.0, 1.0]; 
+            } else { 
+                color = [1.0, 1.0, 1.0, 1.0]; 
+            }
+            points.push({x: x, y: y, color: color});
+
+            //установим фон и очистить <canvas>
+            gl.clearColor(0.0, 0.0, 0.0, 1.0);
+            gl.clear(gl.COLOR_BUFFER_BIT);
+
+            //рисуем точки
+            for(var i = 0; i < points.length; ++i) {
+                // Передать координаты щелчка в переменную a_Position
+                gl.vertexAttrib3f(a_Position, points[i].x, points[i].y, 0.0);
+
+                // Передать координаты щелчка в переменную a_Position
+                gl.uniform4fv(u_FragColor, points[i].color);
+
+                // Нарисовать точку
+                gl.drawArrays(gl.POINTS, 0, 1);
+            }
+        };
+
+        //установим фон и очистить <canvas>
+        gl.clearColor(0.0, 0.0, 0.0, 1.0);
+        gl.clear(gl.COLOR_BUFFER_BIT);
+    }
+  </script> 
+
+</head>
+
+<body onload="main();">  
+    <canvas id="webgl" width="400" height="400">
+        Please use the browser supporting "canvas"
+    </canvas>
+    <br/>
+    <div style="text-align: center; font-size: small; font-style: initial; width:400; height:400;">(по мне можно кликать :)</div>
+</body>
+
+</html>

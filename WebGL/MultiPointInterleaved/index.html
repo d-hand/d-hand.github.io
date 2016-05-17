@@ -1,0 +1,177 @@
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />    
+  
+    <title>MultiPointInterColor</title>
+
+    <script id="shader-vs" type="x-shader/x-vertex">
+        
+        attribute vec4 a_Position;
+        attribute float a_PointSize;
+
+        void main() {
+            gl_Position = a_Position;
+            gl_PointSize = a_PointSize;
+        }
+    </script>
+
+
+    <script id="shader-fs" type="x-shader/x-fragment">
+        void main() {
+            gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);
+        }  
+    </script>  
+
+    <script type="text/javascript">   
+
+        var gl,
+            verticesCount;
+
+        function initGL(canvas) {
+            try {
+                var canvas = document.getElementById('webgl');
+                gl = canvas.getContext("experimental-webgl");
+                gl.viewportWidth = canvas.width;
+                gl.viewportHeight = canvas.height;
+            } catch (e) {
+                alert("Failed initialise WebGl");
+            }
+
+            if (!gl) {
+                alert("Could not initialise WebGL, sorry :-(");
+            }
+        }
+
+        function initShaders() {
+            var getShader = function (gl, id) {
+                var shaderScript = document.getElementById(id);
+                if (!shaderScript) {
+                    return null;
+                }
+
+                var str = "";
+                var k = shaderScript.firstChild;
+                while (k) {
+                    if (k.nodeType == 3) {
+                        str += k.textContent;
+                    }
+                    k = k.nextSibling;
+                }
+
+                var shader;
+                if (shaderScript.type == "x-shader/x-fragment") {
+                    shader = gl.createShader(gl.FRAGMENT_SHADER);
+                } else if (shaderScript.type == "x-shader/x-vertex") {
+                    shader = gl.createShader(gl.VERTEX_SHADER);
+                } else {
+                    return null;
+                }
+
+                gl.shaderSource(shader, str);
+                gl.compileShader(shader);
+
+                if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+                    alert(gl.getShaderInfoLog(shader));
+                    return null;
+                }
+
+                return shader;
+            }
+
+            //получаем шрейдеры описанные выше (shader-fs, shader-vs) 
+            var vertexShader = getShader(gl, "shader-vs");        
+            var fragmentShader = getShader(gl, "shader-fs");  
+
+
+            //Атачим шрейдеры к WebGL
+            shaderProgram = gl.createProgram();
+            gl.attachShader(shaderProgram, vertexShader);
+            gl.attachShader(shaderProgram, fragmentShader);
+            gl.linkProgram(shaderProgram);
+
+            if (!gl.getProgramParameter(shaderProgram, gl.LINK_STATUS)) {
+                alert("Could not initialise shaders");
+            }
+
+            gl.useProgram(shaderProgram);
+            gl.program = shaderProgram;
+        }        
+
+        function initVertexBuffers(){
+            // Создаем один буфер для хранения координат и размера вершины и сопоставляем его с a_Position и a_PointSize
+            var vertices = new Float32Array([
+                // Координаты и размеры точек
+                0.0,    0.5,    10.0, //первая точка и т.д.
+                -0.5,   -0.5,   20.0,
+                0.5,    -0.5,   30.0,
+            ]);            
+
+            var vertexBuffer = gl.createBuffer();
+            if (!vertexBuffer) {
+                throw new Exception("Failed to create the buffer object");
+            }
+            gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
+            gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW);
+
+            // сохраняется размер (число байтов) одного элемента массива vertices
+            var FSIZE = vertices.BYTES_PER_ELEMENT; 
+            
+            var a_Position = gl.getAttribLocation(gl.program, "a_Position");
+            var a_PointSize = gl.getAttribLocation(gl.program, "a_PointSize");
+
+            /*
+            gl.vertexAttribPointer(location, size, type, normalized, stride, offset)
+            
+                location    Определяет переменную-атрибут, которой будет выполнено присваивание.
+
+                size        Определяет число компонентов на вершину в буферном объекте (допустимыми являются значения от 1 до 4). 
+            
+                type        Определяет формат данных.
+            
+                normalized  Либо true, либо false. Указывает на необходимость нормализации невещественных данных в диапазон [0, 1] или [-1, 1]
+
+                stride      Определяет длину шага (в байтах) для извлечения информации об одной вершине, 
+                            то есть, число байтов между азными элементами данных
+
+                offset      Определяет смещение (в байтах) от начала буферного объекта,
+                            где хранятся данные для вершин. Если данные хранятся,
+                            начиная с самого начала буфера, в этом параметре следует
+                            передать значение 0            
+            */
+            gl.vertexAttribPointer(a_Position, 2, gl.FLOAT, false, FSIZE * 3, 0);            
+            gl.vertexAttribPointer(a_PointSize, 1, gl.FLOAT, false, FSIZE*3, FSIZE*2);
+
+            gl.enableVertexAttribArray(a_Position);
+            gl.enableVertexAttribArray(a_PointSize);
+
+            verticesCount = 3; //сохраняем количество вершин, чтобы потом передать его gl.drawArrays
+        }
+
+        function main() {        
+            initGL();
+
+            initShaders();
+
+            initVertexBuffers();
+
+            gl.clearColor(0.0, 0.0, 0.0, 1.0);
+            gl.clear(gl.COLOR_BUFFER_BIT);
+
+            gl.drawArrays(gl.POINTS, 0, verticesCount);
+        }
+  </script> 
+
+</head>
+
+<body onload="main();">  
+    <canvas id="webgl" width="400" height="400">
+        Please use the browser supporting "canvas"
+    </canvas>
+    <br/>
+    <img src="1.jpg"/>
+</body>
+
+</html>

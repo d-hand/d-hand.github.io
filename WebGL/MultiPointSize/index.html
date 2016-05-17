@@ -1,0 +1,162 @@
+﻿<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />    
+  
+    <title>MultiPointSize</title>
+
+    <script id="shader-vs" type="x-shader/x-vertex">
+        
+        attribute vec4 a_Position;
+        attribute float a_PointSize;
+
+        void main() {
+            gl_Position = a_Position;
+            gl_PointSize = a_PointSize;
+        }
+    </script>
+
+
+    <script id="shader-fs" type="x-shader/x-fragment">
+        void main() {
+            gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);
+        }  
+    </script>  
+
+    <script type="text/javascript">   
+
+        var gl,
+            verticesCount;
+
+        function initGL(canvas) {
+            try {
+                var canvas = document.getElementById('webgl');
+                gl = canvas.getContext("experimental-webgl");
+                gl.viewportWidth = canvas.width;
+                gl.viewportHeight = canvas.height;
+            } catch (e) {
+                alert("Failed initialise WebGl");
+            }
+
+            if (!gl) {
+                alert("Could not initialise WebGL, sorry :-(");
+            }
+        }
+
+        function initShaders() {
+            var getShader = function (gl, id) {
+                var shaderScript = document.getElementById(id);
+                if (!shaderScript) {
+                    return null;
+                }
+
+                var str = "";
+                var k = shaderScript.firstChild;
+                while (k) {
+                    if (k.nodeType == 3) {
+                        str += k.textContent;
+                    }
+                    k = k.nextSibling;
+                }
+
+                var shader;
+                if (shaderScript.type == "x-shader/x-fragment") {
+                    shader = gl.createShader(gl.FRAGMENT_SHADER);
+                } else if (shaderScript.type == "x-shader/x-vertex") {
+                    shader = gl.createShader(gl.VERTEX_SHADER);
+                } else {
+                    return null;
+                }
+
+                gl.shaderSource(shader, str);
+                gl.compileShader(shader);
+
+                if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+                    alert(gl.getShaderInfoLog(shader));
+                    return null;
+                }
+
+                return shader;
+            }
+
+            //получаем шрейдеры описанные выше (shader-fs, shader-vs) 
+            var vertexShader = getShader(gl, "shader-vs");        
+            var fragmentShader = getShader(gl, "shader-fs");  
+
+
+            //Атачим шрейдеры к WebGL
+            shaderProgram = gl.createProgram();
+            gl.attachShader(shaderProgram, vertexShader);
+            gl.attachShader(shaderProgram, fragmentShader);
+            gl.linkProgram(shaderProgram);
+
+            if (!gl.getProgramParameter(shaderProgram, gl.LINK_STATUS)) {
+                alert("Could not initialise shaders");
+            }
+
+            gl.useProgram(shaderProgram);
+            gl.program = shaderProgram;
+        }        
+
+        function initVertexBuffers(){
+            // Создаем буфер для хранения координат верши и сопоставляем его с a_Position
+            var vertices = new Float32Array([
+                0.0,  0.5, 
+                -0.5, -0.5, 
+                0.5, -0.5
+            ]);            
+
+            var vertexBuffer = gl.createBuffer();
+            if (!vertexBuffer) {
+                throw new Exception("Failed to create the buffer object");
+            }
+            gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
+            gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW);
+            var a_Position = gl.getAttribLocation(gl.program, "a_Position");        
+            gl.vertexAttribPointer(a_Position, 2, gl.FLOAT, false, 0, 0);            
+            gl.enableVertexAttribArray(a_Position);
+
+            // Создаем буфер для хранения размера верши и сопоставляем его с a_PointSize
+            var verticesSize = new Float32Array([
+                10.0, 20.0, 30.0
+            ]);            
+            var vertexSizeBuffer = gl.createBuffer();
+            if (!vertexSizeBuffer) {
+                throw new Exception("Failed to create the buffer object");
+            }            
+            gl.bindBuffer(gl.ARRAY_BUFFER, vertexSizeBuffer);
+            gl.bufferData(gl.ARRAY_BUFFER, verticesSize, gl.STATIC_DRAW);
+            var a_PointSize = gl.getAttribLocation(gl.program, "a_PointSize");
+            gl.vertexAttribPointer(a_PointSize, 1, gl.FLOAT, false, 0, 0);            
+            gl.enableVertexAttribArray(a_PointSize);
+
+            verticesCount = 3; //сохраняем количество вершин, чтобы потом передать его gl.drawArrays
+        }
+
+        function main() {        
+            initGL();
+
+            initShaders();
+
+            initVertexBuffers();
+
+            gl.clearColor(0.0, 0.0, 0.0, 1.0);
+            gl.clear(gl.COLOR_BUFFER_BIT);
+
+            gl.drawArrays(gl.POINTS, 0, verticesCount);
+        }
+  </script> 
+
+</head>
+
+<body onload="main();">  
+    <canvas id="webgl" width="400" height="400">
+        Please use the browser supporting "canvas"
+    </canvas>
+    <br/>
+    <img src="1.jpg"  />
+</body>
+
+</html>

@@ -1,0 +1,337 @@
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
+
+    <title>Transformation Matrix</title>
+
+    <style>
+        @font-face {
+            font-family: 'inconsolata';
+            src: url('/Files/inconsolata.woff') format('woff');
+            font-weight: normal;
+            font-style: normal;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html {
+            height: 100%;
+        }
+
+        body {
+            background-color: #ffffff;
+            margin: 0px;
+            height: 100%;
+            color: #555;
+            font-family: 'inconsolata';
+            font-size: 15px;
+            line-height: 18px;
+            overflow: auto;
+        }
+
+        h1 {
+            margin-top: 30px;
+            margin-bottom: 40px;
+            margin-left: 20px;
+            font-size: 25px;
+            font-weight: normal;
+        }
+
+        h2 {
+            font-size: 20px;
+            font-weight: normal;
+        }
+
+        a {
+            color: #2194CE;
+            text-decoration: none;
+        }
+
+        .flex-container {
+          padding: 0;
+          margin: 0;
+          list-style: none;
+          
+          display: -webkit-box;
+          display: -moz-box;
+          display: -ms-flexbox;
+          display: -webkit-flex;
+          display: flex;
+          
+          -webkit-flex-flow: row wrap;
+          justify-content: space-around;
+        }
+
+        .flex-item {
+          /*background: tomato;*/
+          padding: 0px;
+          width: 525px;
+          height: 425px;
+          margin-top: 30px;
+          
+          /*line-height: 10px;*/
+          /*color: white;*/
+          /*font-weight: bold;*/
+          font-size: 20px;
+          /*text-align: right;*/
+        }
+    </style>    
+  
+
+
+    <script id="shader-vs" type="x-shader/x-vertex">
+
+        uniform mat4 u_xFormMatrix;
+
+        attribute vec4 a_Position;
+
+        void main() {
+            gl_Position = u_xFormMatrix * a_Position;
+            // gl_Position = a_Position;
+        }
+    </script>
+
+
+    <script id="shader-fs" type="x-shader/x-fragment">
+        void main() {
+            gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);
+        }  
+    </script>  
+
+    <script type="text/javascript">   
+
+        var gl;
+
+        function initGL(canvas) {
+            try {
+                var canvas = document.getElementById('webgl');
+                gl = canvas.getContext("experimental-webgl");
+                gl.viewportWidth = canvas.width;
+                gl.viewportHeight = canvas.height;
+            } catch (e) {
+                alert("Failed initialise WebGl");
+            }
+
+            if (!gl) {
+                alert("Could not initialise WebGL, sorry :-(");
+            }
+        }
+
+        function initShaders() {
+            var getShader = function (gl, id) {
+                var shaderScript = document.getElementById(id);
+                if (!shaderScript) {
+                    return null;
+                }
+
+                var str = "";
+                var k = shaderScript.firstChild;
+                while (k) {
+                    if (k.nodeType == 3) {
+                        str += k.textContent;
+                    }
+                    k = k.nextSibling;
+                }
+
+                var shader;
+                if (shaderScript.type == "x-shader/x-fragment") {
+                    shader = gl.createShader(gl.FRAGMENT_SHADER);
+                } else if (shaderScript.type == "x-shader/x-vertex") {
+                    shader = gl.createShader(gl.VERTEX_SHADER);
+                } else {
+                    return null;
+                }
+
+                gl.shaderSource(shader, str);
+                gl.compileShader(shader);
+
+                if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+                    alert(gl.getShaderInfoLog(shader));
+                    return null;
+                }
+
+                return shader;
+            }
+
+            //получаем шрейдеры описанные выше (shader-fs, shader-vs) 
+            var vertexShader = getShader(gl, "shader-vs");        
+            var fragmentShader = getShader(gl, "shader-fs");  
+
+            //Атачим шрейдеры к WebGL
+            shaderProgram = gl.createProgram();
+            gl.attachShader(shaderProgram, vertexShader);
+            gl.attachShader(shaderProgram, fragmentShader);
+            gl.linkProgram(shaderProgram);
+
+            if (!gl.getProgramParameter(shaderProgram, gl.LINK_STATUS)) {
+                alert("Could not initialise shaders");
+            }
+
+            gl.useProgram(shaderProgram);
+            gl.program = shaderProgram;
+        }
+        
+
+        function main() {        
+            initGL();
+
+            initShaders();
+
+            //установим фон и очистить <canvas>
+            gl.clearColor(0.0, 0.0, 0.0, 1.0);
+            gl.clear(gl.COLOR_BUFFER_BIT);
+
+            // Определить координаты вершин
+            var vertices = new Float32Array([
+                0.0, 0.5, -0.5, -0.5, 0.5, -0.5
+            ]);
+            
+            // Создать буферный объект
+            var vertexBuffer = gl.createBuffer();
+            if (!vertexBuffer) {
+                console.log("Failed to create the buffer object");
+                return -1;
+            }
+            // Определить тип буферного объекта
+            gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
+            // Записать данные в буферный объект
+            gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW);
+            // Получить ссылку на переменную-атрибут a_Position
+            var a_Position = gl.getAttribLocation(gl.program, "a_Position");        
+            // Сохранить ссылку на буферный объект в переменной a_Position
+            gl.vertexAttribPointer(a_Position, 2, gl.FLOAT, false, 0, 0);            
+            // Разрешить присваивание переменной a_Position
+            gl.enableVertexAttribArray(a_Position);
+
+
+            var u_xFormMatrix = gl.getUniformLocation(gl.program, 'u_xFormMatrix');
+            // Примечание: в WebGL элементы следуют в порядке расположения по столбцам
+             var xformMatrixInit = new Float32Array([
+                1.0, 0.0, 0.0, 0.0,
+                0.0, 1.0, 0.0, 0.0,
+                0.0, 0.0, 1.0, 0.0,
+                0.0, 0.0, 0.0, 1.0, 
+             ]);
+             gl.uniformMatrix4fv(u_xFormMatrix, false, xformMatrixInit);
+
+            // Нарисовать три точки
+            gl.drawArrays(gl.TRIANGLES, 0, 3);
+
+            var angle = 0, dx = 0, dy = 0, scale = 1;
+            document.onkeydown = function(e) {
+                console.log(e.keyCode);
+                switch (e.keyCode)
+                {
+                    case 37:
+                        // console.log("left");
+                        dx -= 0.1;
+                        break;
+                    case 38:
+                        // console.log("up");
+                        dy += 0.1;
+                        break;
+                    case 39:
+                        // console.log("right");
+                        dx += 0.1;
+                        break;
+                    case 40:
+                        // console.log("down");
+                        dy -= 0.1;
+                        break;
+                    case 90:
+                        // console.log("z");
+                        angle -= 10;
+                        break;
+                    case 88:
+                        // console.log("x");
+                        angle += 10;
+                        break;
+                    case 187:
+                        // console.log("+");
+                        scale += 0.1;
+                        break;
+                    case 189:
+                        // console.log("-");
+                        scale -= 0.1;
+                        break;
+                    default:                        
+                        return true;
+                }
+
+                var radian = Math.PI * angle / 180;
+                var cos = Math.cos(radian) * scale;
+                var sin = Math.sin(radian) * scale;
+
+                var xformMatrix = new Float32Array([
+                    cos,    -sin,   0.0,    0.0,
+                    sin,    cos,    0.0,    0.0,
+                    0.0,    0.0,    1.0,    0.0,
+                     dx,    dy,     0.0,    1.0, 
+                 ]);
+                 gl.uniformMatrix4fv(u_xFormMatrix, false, xformMatrix);
+
+                //установим фон и очистить <canvas>
+                gl.clearColor(0.0, 0.0, 0.0, 1.0);
+                gl.clear(gl.COLOR_BUFFER_BIT);
+
+                // Нарисовать три точки
+                gl.drawArrays(gl.TRIANGLES, 0, 3);
+
+                //только мы обрабатываем нажатие этих клавишь (чтобы скрол на документе не дергался :) e.preventdefault();                
+                return false;  
+            }          
+        }
+  </script> 
+
+</head>
+
+<body onload="main();">  
+    <h1 style="text-align: center; height: 10px;"> Матрица преобразования </h1>    
+    <div class="flex-container">
+        <div class="flex-item" style="text-align: center;">
+            <canvas id="webgl" width="400" height="400"></canvas>
+            <div style="font-size: 15px; width:525; text-align: center;">&#8592; &#8593; &#8594; &#8595; Z  X - +</div>
+        </div>
+        <div class="flex-item">
+            <div>Перемещение</div>
+            <img src="relocation.jpg">
+            <div>Вращение</div>
+            <img src="rotated.jpg">
+            <div>Масштабирование</div>
+            <img src="scale.jpg">
+        </div>
+    </div>
+    <br/>
+    <div>
+        <h3>Объединение нескольких преобразований</h3>
+        <p>Посмотрим, как можно объединить два преобразований: перемещения с по-следующим вращением:<p/>
+        <span style="font-style: italic;">
+            1. (координаты после перемещения) = (матрица перемещения) × (исходные координаты) </span><br/>
+        <span style="font-style: italic;">
+            2. (координаты после перемещения и вращения) = (матрица вращения) × (координаты после перемещения)<br/>
+        </span>
+        <span style="font-style: italic;">
+            Итого: (координаты после перемещения и вращения) = (матрица вращения) × (матрица перемещения) × (исходные координаты)<br/>
+        </span>        
+        <p>Причем, если поменять местами (матрица вращения) и (матрица перемещения) результат поменяется.</p>
+        <img src="transform-example.jpg">
+        <p>
+            Объединение нескольких преобразований, называют <b>моделированием преобразований</b> 
+            (или <b>моделью преобразований</b>), а матрицу, представляющую такую модель преобразований, называют <b>матрицей модели</b>.
+        </p>        
+        <p>
+            Важно, что при конструировании матрицы модели, нужно всегда держать в голове последовательность преобразований,
+            которые применяются к исходным координатам, для того чтобы получить ожидаемый результат. 
+            Так как даже в этом примере легко ошибиться, потому-что задача поставлена как "перемещения с по-следующим вращением".
+            Если не задумываться о последовательности преобразований <span style="font-style: italic;"> (матрица модели) = (матрица перемещения) × (матрица вращения)</span>, а это как показано на рисунке выше совершенно другой результат (вращение с последующим перемещением).
+        </p>        
+    </div>
+    <br/>
+</body>
+
+</html>

@@ -1,0 +1,156 @@
+﻿<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
+    
+    <title>MultiPoint</title>
+
+    <script id="shader-vs" type="x-shader/x-vertex">
+        
+        attribute vec4 a_Position;
+
+        void main() {
+            gl_Position = a_Position;
+            gl_PointSize = 10.0;
+        }
+    </script>
+
+
+    <script id="shader-fs" type="x-shader/x-fragment">
+        void main() {
+            gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);
+        }  
+    </script>  
+
+    <script type="text/javascript">   
+
+        var gl;
+
+        function initGL(canvas) {
+            try {
+                var canvas = document.getElementById('webgl');
+                gl = canvas.getContext("experimental-webgl");
+                gl.viewportWidth = canvas.width;
+                gl.viewportHeight = canvas.height;
+            } catch (e) {
+                alert("Failed initialise WebGl");
+            }
+
+            if (!gl) {
+                alert("Could not initialise WebGL, sorry :-(");
+            }
+        }
+
+        function initShaders() {
+            var getShader = function (gl, id) {
+                var shaderScript = document.getElementById(id);
+                if (!shaderScript) {
+                    return null;
+                }
+
+                var str = "";
+                var k = shaderScript.firstChild;
+                while (k) {
+                    if (k.nodeType == 3) {
+                        str += k.textContent;
+                    }
+                    k = k.nextSibling;
+                }
+
+                var shader;
+                if (shaderScript.type == "x-shader/x-fragment") {
+                    shader = gl.createShader(gl.FRAGMENT_SHADER);
+                } else if (shaderScript.type == "x-shader/x-vertex") {
+                    shader = gl.createShader(gl.VERTEX_SHADER);
+                } else {
+                    return null;
+                }
+
+                gl.shaderSource(shader, str);
+                gl.compileShader(shader);
+
+                if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+                    alert(gl.getShaderInfoLog(shader));
+                    return null;
+                }
+
+                return shader;
+            }
+
+            //получаем шрейдеры описанные выше (shader-fs, shader-vs) 
+            var vertexShader = getShader(gl, "shader-vs");        
+            var fragmentShader = getShader(gl, "shader-fs");  
+
+
+            //Атачим шрейдеры к WebGL
+            shaderProgram = gl.createProgram();
+            gl.attachShader(shaderProgram, vertexShader);
+            gl.attachShader(shaderProgram, fragmentShader);
+            gl.linkProgram(shaderProgram);
+
+            if (!gl.getProgramParameter(shaderProgram, gl.LINK_STATUS)) {
+                alert("Could not initialise shaders");
+            }
+
+            gl.useProgram(shaderProgram);
+            gl.program = shaderProgram;
+        }        
+
+        function main() {        
+            initGL();
+
+            initShaders();
+
+            //установим фон и очистить <canvas>
+            gl.clearColor(0.0, 0.0, 0.0, 1.0);
+            gl.clear(gl.COLOR_BUFFER_BIT);
+
+            // Определить координаты вершин
+            var vertices = new Float32Array([
+                0.0, 0.5, -0.5, -0.5, 0.5, -0.5
+            ]);
+            
+            // Создать буферный объект
+            var vertexBuffer = gl.createBuffer();
+            if (!vertexBuffer) {
+                console.log("Failed to create the buffer object");
+                return -1;
+            }
+
+            // Определить тип буферного объекта
+            gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
+
+            // Записать данные в буферный объект
+            gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW);
+
+            // Получить ссылку на переменную-атрибут a_Position
+            var a_Position = gl.getAttribLocation(gl.program, "a_Position");
+        
+            // Сохранить ссылку на буферный объект в переменной a_Position
+            gl.vertexAttribPointer(a_Position, 2, gl.FLOAT, false, 0, 0);
+            
+            // Разрешить присваивание переменной a_Position
+            gl.enableVertexAttribArray(a_Position);
+
+            // Нарисовать три точки
+            gl.drawArrays(gl.POINTS, 0, 3);
+        }
+  </script> 
+
+</head>
+
+<body onload="main();">  
+    <canvas id="webgl" width="400" height="400">
+        Please use the browser supporting "canvas"
+    </canvas>
+    <br/><img src="1.jpg"/>
+    <br/><img src="2.jpg"/>
+    <br/><img src="3.jpg"/>
+    <br/><img src="4.jpg"/>
+    <br/><img src="5.jpg"/>
+    <br/><img src="6.jpg"/>
+</body>
+
+</html>

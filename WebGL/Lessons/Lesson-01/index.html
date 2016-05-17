@@ -1,0 +1,214 @@
+﻿<html>
+  !!!
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+  <meta http-equiv="Pragma" content="no-cache" />
+  <meta http-equiv="Expires" content="0" />  
+
+  <title>Learning WebGL lesson 1</title>
+   
+  <script type="text/javascript" src="glMatrix-0.9.5.min.js"></script>
+
+  <!--     
+    shader-fs и shader-vs 
+    Написаны на специальном языке шрейдеров OpenGL Shading Language - GLSL
+    Почти ничего не делают %)
+    shader-fs 
+      Указывает цвет в который будут закрашены все рисуемые объекты...
+      
+    shader-vs
+      Делегируем вычисление координат точек видеокарте!) 
+        aVertexPosition - координаты вершины
+        uMVMatrix       - матрица перобразования
+        uPMatrix        - матрица преспективы
+  -->
+  <script id="shader-fs" type="x-shader/x-fragment">
+    precision mediump float;
+
+    void main(void) {
+        gl_FragColor = vec4(1.0, 1.0, 1.0, 1.0);
+    }
+  </script>
+  
+  <script id="shader-vs" type="x-shader/x-vertex">
+    attribute vec3 aVertexPosition;
+
+    uniform mat4 uMVMatrix;  
+    uniform mat4 uPMatrix;
+
+    void main(void) {
+        gl_Position = uPMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);   //gl_Position одна из обязательных переменных (varying variables  (WebGL Render Pipeline)), которую должен возвращать Vertix Shader
+    }
+  </script>
+
+  <script type="text/javascript">
+
+    var gl;  //WebGL context
+    function initGL(canvas) {
+        try {
+            gl = canvas.getContext("experimental-webgl");  //
+            gl.viewportWidth = canvas.width;
+            gl.viewportHeight = canvas.height;
+        } catch (e) {
+        }
+        if (!gl) {
+            alert("Could not initialise WebGL, sorry :-(");
+        }
+    }
+    
+    function getShader(gl, id) {
+        var shaderScript = document.getElementById(id);
+        if (!shaderScript) {
+            return null;
+        }
+
+        var str = "";
+        var k = shaderScript.firstChild;
+        while (k) {
+            if (k.nodeType == 3) {
+                str += k.textContent;
+            }
+            k = k.nextSibling;
+        }
+
+        var shader;
+        if (shaderScript.type == "x-shader/x-fragment") {
+            shader = gl.createShader(gl.FRAGMENT_SHADER);
+        } else if (shaderScript.type == "x-shader/x-vertex") {
+            shader = gl.createShader(gl.VERTEX_SHADER);
+        } else {
+            return null;
+        }
+
+        gl.shaderSource(shader, str);
+        gl.compileShader(shader);
+
+        if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+            alert(gl.getShaderInfoLog(shader));
+            return null;
+        }
+
+        return shader;
+    }
+
+
+    var shaderProgram;
+
+    function initShaders() {
+        //получаем шрейдеры описанные выше (shader-fs, shader-vs) 
+        var fragmentShader = getShader(gl, "shader-fs");  
+        var vertexShader = getShader(gl, "shader-vs");
+
+        //Атачим шрейдеры к WebGL
+        shaderProgram = gl.createProgram();
+        gl.attachShader(shaderProgram, vertexShader);
+        gl.attachShader(shaderProgram, fragmentShader);
+        gl.linkProgram(shaderProgram);
+
+        if (!gl.getProgramParameter(shaderProgram, gl.LINK_STATUS)) {
+            alert("Could not initialise shaders");
+        }
+
+        gl.useProgram(shaderProgram);
+
+        shaderProgram.vertexPositionAttribute = gl.getAttribLocation(shaderProgram, "aVertexPosition"); //Получаем доступ к aVertexPosition из shader-vs
+        gl.enableVertexAttribArray(shaderProgram.vertexPositionAttribute); //говорим webgl, что мы хотим предоставить значения атрибута с помощью массива
+        
+        //Так же получаем доступ к контексту shader-vs, а именно к переменным uPMatrix и uMVMatrix
+        shaderProgram.pMatrixUniform = gl.getUniformLocation(shaderProgram, "uPMatrix");
+        shaderProgram.mvMatrixUniform = gl.getUniformLocation(shaderProgram, "uMVMatrix");
+    }
+
+
+    var mvMatrix = mat4.create();   //model-view matrix
+    var pMatrix = mat4.create();    //projection matrix
+
+    //Перемещает все сделанные преобразования в mvMatrix и pMatrix в видеокарту...
+    function setMatrixUniforms() {
+        gl.uniformMatrix4fv(shaderProgram.pMatrixUniform, false, pMatrix);
+        gl.uniformMatrix4fv(shaderProgram.mvMatrixUniform, false, mvMatrix);
+    }
+
+    //Переменные для триугольника и квадрата + функция для ихней инициализации     
+    var triangleVertexPositionBuffer;
+    var squareVertexPositionBuffer;    
+    function initBuffers() {                
+        triangleVertexPositionBuffer = gl.createBuffer();               //Создаем буфер для хранения вершин геометрического объекта 
+        gl.bindBuffer(gl.ARRAY_BUFFER, triangleVertexPositionBuffer);   //Указываем способ хранения информации 
+        var vertices = [                                                //Задаем вершины 
+             0.0,  1.0,  0.0,
+            -1.0, -1.0,  0.0,
+             1.0, -1.0,  0.0
+        ];
+        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);   //Заполняем буфер и конвертируем JS лист в WebGL массив...
+        triangleVertexPositionBuffer.itemSize = 3;    //Добавляем два новых свойства это пригодится дальше
+        triangleVertexPositionBuffer.numItems = 3;    //Это не WebGL свойства!                        
+        
+        squareVertexPositionBuffer = gl.createBuffer();
+        gl.bindBuffer(gl.ARRAY_BUFFER, squareVertexPositionBuffer);
+        vertices = [
+             1.0,  1.0,  0.0,
+            -1.0,  1.0,  0.0,          
+             1.0, -1.0,  0.0,
+            -1.0, -1.0,  0.0, 
+        ];
+        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
+        squareVertexPositionBuffer.itemSize = 3;
+        squareVertexPositionBuffer.numItems = 4;        
+    }
+
+    //Отрисовка сцены...
+    function drawScene() {
+        gl.viewport(0, 0, gl.viewportWidth, gl.viewportHeight);   //Указываем размер canvas
+        gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);      //Очищаем
+
+        //здесь мы устанавливаем точки зрения, с которой мы хотим просмотреть сцену
+        //угол обзора, соотношение сторон canvas, размер сцены (как близко/далеко мы хотим видеть...)
+        //для этого используем сторонию библиотеку для работы с матрицами glMatrix
+        mat4.perspective(45, gl.viewportWidth / gl.viewportHeight, 0.1, 100.0, pMatrix);        
+        
+        //Перемещаясь в цнтре сцены в начало координат %)
+        //К рисуемым объектам НЕ будут применяться преобразований т.е. координаты ихних вершин остануться без изменения 
+        mat4.identity(mvMatrix);  
+        
+        mat4.translate(mvMatrix, [-1.5, 0.0, -7.0]);  //Перемещаем цент сцены в лево для того чтобы отобразить триугольник...        
+        gl.bindBuffer(gl.ARRAY_BUFFER, triangleVertexPositionBuffer);  // выбираем один из наших буферов
+        gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute, triangleVertexPositionBuffer.itemSize, gl.FLOAT, false, 0, 0);              
+        setMatrixUniforms();  //настраиваем видяху в соответсвии mvMatrix и pMatrix %)
+        gl.drawArrays(gl.TRIANGLES, 0, triangleVertexPositionBuffer.numItems);  //рисует переданные рание буферы...
+
+        mat4.translate(mvMatrix, [3.0, 0.0, 0.0]);
+        gl.bindBuffer(gl.ARRAY_BUFFER, squareVertexPositionBuffer);
+        gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute, squareVertexPositionBuffer.itemSize, gl.FLOAT, false, 0, 0);
+        setMatrixUniforms();
+        //gl.drawArrays(gl.TRIANGLE_STRIP, 0, squareVertexPositionBuffer.numItems);        
+        gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+        
+        
+    }
+
+    function webGLStart() {
+        var canvas = document.getElementById("lesson01-canvas");
+        initGL(canvas);
+        initShaders();
+        initBuffers();
+        
+        gl.clearColor(0.0, 0.0, 0.0, 1.0);    // Очищаем canvas определнным цветом
+        gl.enable(gl.DEPTH_TEST);             // Включаем тест глубины (Указываем WebGL чтобы он прятал объекты которые находятся по зади фронтовых %)
+
+        drawScene();
+    }
+
+  </script> 
+
+</head>
+
+<body onload="webGLStart();">
+  <h1>Lesson 1 (d_hand)</h1>
+  
+  <canvas id="lesson01-canvas" style="border: none;" width="500" height="500"></canvas>
+
+</body>
+
+</html>

@@ -1,0 +1,234 @@
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
+    
+    <title>AnimateTriangleRotation</title>
+
+    <style>
+        .noselect {
+            /*visibility: hidden;*/
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            -khtml-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            -o-user-select: none;
+            user-select: none;
+        }    
+    </style>
+
+    <script type="text/javascript" src="glMatrix-0.9.5.min.js"></script>
+    <script type="text/javascript" src="stats.min.js"></script>
+
+    <script id="shader-vs" type="x-shader/x-vertex">
+
+        uniform mat4 u_xFormMatrix;
+
+        attribute vec4 a_Position;
+
+        void main() {
+            gl_Position = u_xFormMatrix * a_Position;
+        }
+    </script>
+
+
+    <script id="shader-fs" type="x-shader/x-fragment">
+        void main() {
+            gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0);
+        }  
+    </script>  
+
+    <script type="text/javascript">   
+
+        var gl,
+            stats,
+            u_xFormMatrix,                        
+
+            rotationAngle = 0,
+            rotationSpeed = 45,
+            triangleRotationAngle = 0,
+            triangleRotationSpeed = 45,
+            lastDate = Date.now();
+
+        function initGL(canvas) {
+            try {
+                var canvas = document.getElementById('webgl');
+                gl = canvas.getContext("experimental-webgl");
+                gl.viewportWidth = canvas.width;
+                gl.viewportHeight = canvas.height;
+            } catch (e) {
+                alert("Failed initialise WebGl");
+            }
+
+            if (!gl) {
+                alert("Could not initialise WebGL, sorry :-(");
+            }
+        }
+
+        function initShaders() {
+            var getShader = function (gl, id) {
+                var shaderScript = document.getElementById(id);
+                if (!shaderScript) {
+                    return null;
+                }
+
+                var str = "";
+                var k = shaderScript.firstChild;
+                while (k) {
+                    if (k.nodeType == 3) {
+                        str += k.textContent;
+                    }
+                    k = k.nextSibling;
+                }
+
+                var shader;
+                if (shaderScript.type == "x-shader/x-fragment") {
+                    shader = gl.createShader(gl.FRAGMENT_SHADER);
+                } else if (shaderScript.type == "x-shader/x-vertex") {
+                    shader = gl.createShader(gl.VERTEX_SHADER);
+                } else {
+                    return null;
+                }
+
+                gl.shaderSource(shader, str);
+                gl.compileShader(shader);
+
+                if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+                    alert(gl.getShaderInfoLog(shader));
+                    return null;
+                }
+
+                return shader;
+            }
+
+            //получаем шрейдеры описанные выше (shader-fs, shader-vs) 
+            var vertexShader = getShader(gl, "shader-vs");        
+            var fragmentShader = getShader(gl, "shader-fs");  
+
+            //Атачим шрейдеры к WebGL
+            shaderProgram = gl.createProgram();
+            gl.attachShader(shaderProgram, vertexShader);
+            gl.attachShader(shaderProgram, fragmentShader);
+            gl.linkProgram(shaderProgram);
+
+            if (!gl.getProgramParameter(shaderProgram, gl.LINK_STATUS)) {
+                alert("Could not initialise shaders");
+            }
+
+            gl.useProgram(shaderProgram);
+            gl.program = shaderProgram;
+        }
+        
+
+        function main() {
+            stats = new Stats();
+            document.body.appendChild( stats.dom );
+
+            initGL();
+
+            initShaders();
+
+            // Определить координаты вершин треугольника
+            var vertices = new Float32Array([
+                0.0, 0.15, -0.15, -0.15, 0.15, -0.15
+            ]);            
+            // Создать буферный объект для вершин треугольника
+            var vertexBuffer = gl.createBuffer();
+            if (!vertexBuffer) {
+                console.log("Failed to create the buffer object");
+                return -1;
+            }
+            // Определить тип буферного объекта
+            gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
+            // Записать данные в буферный объект
+            gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW);
+            // Получить ссылку на переменную-атрибут a_Position
+            var a_Position = gl.getAttribLocation(gl.program, "a_Position");
+            // Сохранить ссылку на буферный объект в переменной a_Position
+            gl.vertexAttribPointer(a_Position, 2, gl.FLOAT, false, 0, 0);
+            // Разрешить присваивание переменной a_Position
+            gl.enableVertexAttribArray(a_Position);
+
+            // Получить ссылку на переменную u_xFormMatrix
+            u_xFormMatrix = gl.getUniformLocation(gl.program, 'u_xFormMatrix');
+
+            //установим фон и очистить <canvas>
+            gl.clearColor(1.0, 1.0, 1.0, 1.0);
+
+            document.getElementById('webgl').onclick = function(e) {
+                triangleRotationSpeed += 45;
+            }
+
+            document.getElementById('webgl').addEventListener('contextmenu', function(e) {
+                triangleRotationSpeed -= 45;
+                e.preventDefault();
+            }, false);     
+
+            document.onkeydown = function(e) {
+
+                switch (e.keyCode)
+                {
+                    case 187:
+                    case 109:
+                        // console.log("+");
+                        rotationSpeed += 45;
+                        return;
+                    case 189:
+                    case 107:
+                        // console.log("-");
+                        rotationSpeed -= 45;
+                        return;
+                    case 13:
+                        rotationSpeed = 0;
+                        triangleRotationSpeed  = 0;
+                        return;
+                }                
+            }
+
+            animate();
+        }
+
+        function animate() {
+            requestAnimationFrame(animate);
+            update();
+            draw();
+            stats.update();            
+        }
+        
+        function degToRadian(deg){
+            return Math.PI * deg / 180;
+        }
+
+        function update() {
+            var nowDate = Date.now();
+            var xFormMatrix = mat4.create();
+            var elapsed = (nowDate - lastDate) / 1000.0;
+
+            rotationAngle += rotationSpeed * elapsed % 360;
+            triangleRotationAngle += triangleRotationSpeed * elapsed % 360;
+            
+            mat4.identity(xFormMatrix);
+            mat4.rotateZ(xFormMatrix, degToRadian(rotationAngle));
+            mat4.translate(xFormMatrix, [0.5, 0, 0]);
+            mat4.rotateZ(xFormMatrix, degToRadian(triangleRotationAngle));
+
+            gl.uniformMatrix4fv(u_xFormMatrix, false, xFormMatrix);
+            lastDate = nowDate;
+        }
+
+        function draw() {
+            gl.clear(gl.COLOR_BUFFER_BIT);
+            gl.drawArrays(gl.TRIANGLES, 0, 3);
+        }
+  </script>
+</head>
+
+<body onload="main();">  
+    <canvas id="webgl" width="400" height="400"></canvas>    
+    <div style="font-size: 15px; width:400; text-align: center;" class="noselect">- + мышка</div>
+</body>
+
+</html>
