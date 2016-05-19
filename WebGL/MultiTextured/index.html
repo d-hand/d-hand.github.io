@@ -171,9 +171,7 @@
 
         function createTexture(slot, image, u_Texture) {
 
-            var texture = gl.createTexture(); // Создать объект текстуры            
-
-            
+            var texture = gl.createTexture(); // Создать объект текстуры                        
             
             gl.activeTexture(getTextureSlot(gl, slot)); // Выбрать слот для тестуры
             
@@ -181,11 +179,9 @@
                         
             gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR); // Определить параметры текстуры
             
-            
+            gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, 1); // Повернуть ось Y изображения
 
             gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE, image); // Определить изображение текстуры
-
-            gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, 1); // Повернуть ось Y изображения
             
             gl.uniform1i(u_Texture, slot); // Определить указатель на текстурный слот 0
         }
