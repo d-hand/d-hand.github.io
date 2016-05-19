@@ -1,0 +1,227 @@
+﻿<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
+      
+    <title>HelloQuad</title>
+
+    <script type="text/javascript" src="jquery-2.2.3.min.js"></script>
+
+    <script id="shader-vs" type="x-shader/x-vertex">
+        
+        attribute vec4 a_Position;
+
+        attribute vec2 a_TexCoord;
+
+        varying vec2 v_TexCoord;
+
+        void main() {
+            gl_Position = a_Position;
+            v_TexCoord = a_TexCoord;
+        }
+    </script>
+
+
+    <script id="shader-fs" type="x-shader/x-fragment">
+
+        //спецификатор точности передаваемым переменным (mediump средняя)
+        precision mediump float;
+
+
+        uniform sampler2D u_Texture0;
+        uniform sampler2D u_Texture1;
+
+        //интерполированные координаты текстуры для текущего фрагмента
+        varying vec2 v_TexCoord;
+
+        void main() {
+            vec4 color0 = texture2D(u_Texture0, v_TexCoord);
+            vec4 color1 = texture2D(u_Texture1, v_TexCoord);
+            gl_FragColor = color0 * color1;
+        }  
+    </script>  
+
+    <script type="text/javascript">
+
+        var gl;
+
+        function initGL(canvas) {
+            try {
+                var canvas = document.getElementById('webgl');
+                gl = canvas.getContext("experimental-webgl");
+                gl.viewportWidth = canvas.width;
+                gl.viewportHeight = canvas.height;
+            } catch (e) {
+                alert("Failed initialise WebGl");
+            }
+
+            if (!gl) {
+                alert("Could not initialise WebGL, sorry :-(");
+            }
+        }
+
+        function initShaders() {
+            var getShader = function (gl, id) {
+                var shaderScript = document.getElementById(id);
+                if (!shaderScript) {
+                    return null;
+                }
+
+                var str = "";
+                var k = shaderScript.firstChild;
+                while (k) {
+                    if (k.nodeType == 3) {
+                        str += k.textContent;
+                    }
+                    k = k.nextSibling;
+                }
+
+                var shader;
+                if (shaderScript.type == "x-shader/x-fragment") {
+                    shader = gl.createShader(gl.FRAGMENT_SHADER);
+                } else if (shaderScript.type == "x-shader/x-vertex") {
+                    shader = gl.createShader(gl.VERTEX_SHADER);
+                } else {
+                    return null;
+                }
+
+                gl.shaderSource(shader, str);
+                gl.compileShader(shader);
+
+                if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+                    alert(gl.getShaderInfoLog(shader));
+                    return null;
+                }
+
+                return shader;
+            }
+
+            //получаем шрейдеры описанные выше (shader-fs, shader-vs) 
+            var vertexShader = getShader(gl, "shader-vs");        
+            var fragmentShader = getShader(gl, "shader-fs");  
+
+
+            //Атачим шрейдеры к WebGL
+            shaderProgram = gl.createProgram();
+            gl.attachShader(shaderProgram, vertexShader);
+            gl.attachShader(shaderProgram, fragmentShader);
+            gl.linkProgram(shaderProgram);
+
+            if (!gl.getProgramParameter(shaderProgram, gl.LINK_STATUS)) {
+                alert("Could not initialise shaders");
+            }
+
+            gl.useProgram(shaderProgram);
+            gl.program = shaderProgram;
+        }
+        
+        function initVertixBuffer() {
+            // Координаты вершин квадрата и соответсвующие для них координаты текстуры 
+            var data = new Float32Array([
+                -0.5,   0.5,    0.0,    1.0,
+                -0.5,   -0.5,   0.0,    0.0,
+                0.5,    0.5,    1.0,    1.0,
+                0.5,    -0.5,   1.0,    0.0,
+            ]);
+            var result = 4;                   
+
+            var dataBuffer = gl.createBuffer();
+            if (!dataBuffer) {
+                throw new Exception("Failed to create the buffer object");
+            }                        
+            gl.bindBuffer(gl.ARRAY_BUFFER, dataBuffer);
+            gl.bufferData(gl.ARRAY_BUFFER, data, gl.STATIC_DRAW);
+
+            var size = data.BYTES_PER_ELEMENT;
+            var a_Position = gl.getAttribLocation(gl.program, "a_Position");            
+            var a_TexCoord = gl.getAttribLocation(gl.program, "a_TexCoord");
+
+            gl.vertexAttribPointer(a_Position, 2, gl.FLOAT, false,  size*4, 0);            
+            gl.vertexAttribPointer(a_TexCoord, 2, gl.FLOAT, false,  size*4, size*2);
+
+            gl.enableVertexAttribArray(a_Position);
+            gl.enableVertexAttribArray(a_TexCoord);
+
+            return result;
+        }
+
+        function loadImage(url){
+            var result = $.Deferred();
+            var image = new Image();
+            image.onload = function() {
+                result.resolve(image)
+            };
+            image.onerror = result.reject;
+            image.src = url;
+            return result.promise();
+        }
+
+        function getTextureSlot(gl, slot) {
+            switch (slot) {
+                case 0:
+                    return gl.TEXTURE0;
+                case 1:
+                    return gl.TEXTURE1;
+                default:
+                    throw new Exception("Argument out of range.");
+            }
+        }
+
+        function createTexture(slot, image, u_Texture) {
+
+            var texture = gl.createTexture(); // Создать объект текстуры            
+
+            
+            
+            gl.activeTexture(getTextureSlot(gl, slot)); // Выбрать слот для тестуры
+            
+            gl.bindTexture(gl.TEXTURE_2D, texture); // Указать тип объекта текстуры
+                        
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR); // Определить параметры текстуры
+            
+            
+
+            gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE, image); // Определить изображение текстуры
+
+            gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, 1); // Повернуть ось Y изображения
+            
+            gl.uniform1i(u_Texture, slot); // Определить указатель на текстурный слот 0
+        }
+
+        function main() {        
+            initGL();
+
+            initShaders();
+
+            var n = initVertixBuffer();
+
+            // The arguments passed to the doneCallbacks provide the resolved values for each of the Deferreds, 
+            // and matches the order the eferreds were passed to jQuery.when()
+            $.when(loadImage("0.gif"), loadImage("1.gif")).done(function(image0, image1) {
+
+                var u_Texture0 = gl.getUniformLocation(gl.program, "u_Texture0");
+
+                var u_Texture1 = gl.getUniformLocation(gl.program, "u_Texture1");
+
+                createTexture(0, image0, u_Texture0);
+
+                createTexture(1, image1, u_Texture1);
+
+                gl.clearColor(1.0, 1.0, 1.0, 1.0);
+                gl.clear(gl.COLOR_BUFFER_BIT);
+                gl.drawArrays(gl.TRIANGLE_STRIP, 0, n);
+            });
+        }
+  </script> 
+
+</head>
+
+<body onload="main();">  
+    <canvas id="webgl" width="400" height="400">
+        Please use the browser supporting "canvas"
+    </canvas>
+</body>
+
+</html>
