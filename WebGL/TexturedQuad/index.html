@@ -11,15 +11,31 @@
         
         attribute vec4 a_Position;
 
+        attribute vec2 a_TexCoord;
+        varying vec2 v_TexCoord;
+
         void main() {
             gl_Position = a_Position;
+            v_TexCoord = a_TexCoord;
         }
     </script>
 
 
     <script id="shader-fs" type="x-shader/x-fragment">
+
+        //спецификатор точности передаваемым переменным (mediump средняя)
+        precision mediump float;
+
+        //сама текстура
+        uniform sampler2D u_Texture;
+
+        //интерполированные координаты текстуры для текущего фрагмента
+        varying vec2 v_TexCoord;
+
         void main() {
-            gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);
+            //получаем цвет из тестуры по ее координатми
+            gl_FragColor = texture2D(u_Texture, v_TexCoord);
+            // gl_FragColor = vec4(1.0, 0.0, 1.0, 1.0);
         }  
     </script>  
 
@@ -97,48 +113,74 @@
             gl.program = shaderProgram;
         }
         
+        function initVertixBuffer() {
+            // Координаты вершин квадрата и соответсвующие для них координаты текстуры 
+            var data = new Float32Array([
+                -0.5,   0.5,    0.0,    1.0,
+                -0.5,   -0.5,   0.0,    0.0,
+                0.5,    0.5,    1.0,    1.0,
+                0.5,    -0.5,   1.0,    0.0,
+            ]);
+            var result = 4;                   
+
+            var dataBuffer = gl.createBuffer();
+            if (!dataBuffer) {
+                throw new Exception("Failed to create the buffer object");
+            }                        
+            gl.bindBuffer(gl.ARRAY_BUFFER, dataBuffer);
+            gl.bufferData(gl.ARRAY_BUFFER, data, gl.STATIC_DRAW);
+
+            var size = data.BYTES_PER_ELEMENT;
+            var a_Position = gl.getAttribLocation(gl.program, "a_Position");            
+            var a_TexCoord = gl.getAttribLocation(gl.program, "a_TexCoord");
+
+            gl.vertexAttribPointer(a_Position, 2, gl.FLOAT, false,  size*4, 0);            
+            gl.vertexAttribPointer(a_TexCoord, 2, gl.FLOAT, false,  size*4, size*2);
+
+            gl.enableVertexAttribArray(a_Position);
+            gl.enableVertexAttribArray(a_TexCoord);
+
+            return result;
+        }
 
         function main() {        
             initGL();
 
             initShaders();
 
-            //установим фон и очистить <canvas>
-            gl.clearColor(0.0, 0.0, 0.0, 1.0);
-            gl.clear(gl.COLOR_BUFFER_BIT);
-
-            // Определить координаты вершин
-            var vertices = new Float32Array([
-                -0.5, -0.5, 
-                -0.5, 0.5, 
-                0.5, -0.5,
-                0.5, 0.5, 
-            ]);
+            var n = initVertixBuffer();
             
-            // Создать буферный объект
-            var vertexBuffer = gl.createBuffer();
-            if (!vertexBuffer) {
-                console.log("Failed to create the buffer object");
-                return -1;
-            }
-
-            // Определить тип буферного объекта
-            gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
-
-            // Записать данные в буферный объект
-            gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW);
-
-            // Получить ссылку на переменную-атрибут a_Position
-            var a_Position = gl.getAttribLocation(gl.program, "a_Position");
-        
-            // Сохранить ссылку на буферный объект в переменной a_Position
-            gl.vertexAttribPointer(a_Position, 2, gl.FLOAT, false, 0, 0);
+            var texture = gl.createTexture(); // Создать объект текстуры            
             
-            // Разрешить присваивание переменной a_Position
-            gl.enableVertexAttribArray(a_Position);
+            var u_Texture = gl.getUniformLocation(gl.program, "u_Texture"); // Получить ссылку u_Texture (буде содержать текстуру)            
+            
+            var image = new Image(); // Создать объект изображения
+            
+            // Зарегистрировать обработчик, вызываемый послезагрузки изображения
+            image.onload = function() {
+                
+                gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, 1); // Повернуть ось Y изображения
+                
+                gl.activeTexture(gl.TEXTURE0); // Выбрать текстурный слот 0
+                
+                gl.bindTexture(gl.TEXTURE_2D, texture); // Указать тип объекта текстуры
+                            
+                gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR); // Определить параметры текстуры
+                // gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE );
+                // gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.MIRRORED_REPEAT );
+                
+                gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE, image); // Определить изображение текстуры
+                
+                gl.uniform1i(u_Texture, 0); // Определить указатель на текстурный слот 0
 
-            // Нарисовать три точки
-            gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+                
+                gl.clearColor(1.0, 1.0, 1.0, 1.0);
+                gl.clear(gl.COLOR_BUFFER_BIT);
+                gl.drawArrays(gl.TRIANGLE_STRIP, 0, n);
+            };
+
+            // Заставить браузер загрузить изображение
+            image.src = "nehe.gif";
         }
   </script> 
 
