@@ -8,5 +8,4 @@ ReactDom.render(
     <div>
         <AddColorForm/>
         <Star/>
-    </div>    
-    , container);
+    </div>, container);
