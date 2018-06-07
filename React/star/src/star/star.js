@@ -8,8 +8,6 @@ const Star = ({ selected=false, onClick=f=>f }) =>
 Star.propTypes = {
     selected: PropTypes.bool,
     onClick: PropTypes.func
-}    
+}
 
 export default Star;
-
-

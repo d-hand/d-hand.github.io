@@ -1,11 +1,5 @@
 import React from 'react';
 import ReactDom from 'react-dom';
-import AddColorForm from './addColorForm'
-import Star from './star'
+import App from 'app/app.js'
 
-var container = document.getElementById("react-container");
-ReactDom.render(
-    <div>
-        <AddColorForm/>
-        <Star/>
-    </div>, container);
+ReactDom.render(<App/>, document.getElementById("react-container"));

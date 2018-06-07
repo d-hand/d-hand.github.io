@@ -86,19 +86,57 @@
 /************************************************************************/
 /******/ ({
 
-/***/ "./node_modules/css-loader/index.js!./src/star.css":
-/*!************************************************!*\
-  !*** ./node_modules/css-loader!./src/star.css ***!
-  \************************************************/
+/***/ "./node_modules/css-loader/index.js!./src/app/app.css":
+/*!***************************************************!*\
+  !*** ./node_modules/css-loader!./src/app/app.css ***!
+  \***************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(/*! ../node_modules/css-loader/lib/css-base.js */ "./node_modules/css-loader/lib/css-base.js")(false);
+exports = module.exports = __webpack_require__(/*! ../../node_modules/css-loader/lib/css-base.js */ "./node_modules/css-loader/lib/css-base.js")(false);
+// imports
+
+
+// module
+exports.push([module.i, "", ""]);
+
+// exports
+
+
+/***/ }),
+
+/***/ "./node_modules/css-loader/index.js!./src/star/star.css":
+/*!*****************************************************!*\
+  !*** ./node_modules/css-loader!./src/star/star.css ***!
+  \*****************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(/*! ../../node_modules/css-loader/lib/css-base.js */ "./node_modules/css-loader/lib/css-base.js")(false);
 // imports
 
 
 // module
 exports.push([module.i, ".star {\r\n    cursor: pointer;\r\n    width: 2em;\r\n    height: 2em;\r\n    background-color: grey;\r\n    -webkit-clip-path: polygon(\r\n        50% 0%, 63% 38%, 100% 38%,\r\n        69% 59%, 82% 100%, 50% 75%,\r\n        18% 100%, 31% 59%, 0% 38%, 37% 38%);        \r\n    clip-path: polygon(\r\n        50% 0%, 63% 38%,\r\n        100% 38%, 69% 59%, 82% 100%,\r\n        50% 75%, 18% 100%, 31% 59%,\r\n        0% 38%, 37% 38%);\r\n}\r\n  \r\n.star.selected {\r\n    background-color: red;\r\n}", ""]);
+
+// exports
+
+
+/***/ }),
+
+/***/ "./node_modules/css-loader/index.js!./src/starRating/starRating.css":
+/*!*****************************************************************!*\
+  !*** ./node_modules/css-loader!./src/starRating/starRating.css ***!
+  \*****************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(/*! ../../node_modules/css-loader/lib/css-base.js */ "./node_modules/css-loader/lib/css-base.js")(false);
+// imports
+
+
+// module
+exports.push([module.i, ".star-rating {\r\n    display: flex;\r\n    flex-wrap: wrap;\r\n    justify-content: space-around;\r\n  }", ""]);
 
 // exports
 
@@ -21004,10 +21042,266 @@ module.exports = function (css) {
 
 /***/ }),
 
-/***/ "./src/addColorForm.js":
-/*!*****************************!*\
-  !*** ./src/addColorForm.js ***!
-  \*****************************/
+/***/ "./node_modules/uuid/index.js":
+/*!************************************!*\
+  !*** ./node_modules/uuid/index.js ***!
+  \************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+var v1 = __webpack_require__(/*! ./v1 */ "./node_modules/uuid/v1.js");
+var v4 = __webpack_require__(/*! ./v4 */ "./node_modules/uuid/v4.js");
+
+var uuid = v4;
+uuid.v1 = v1;
+uuid.v4 = v4;
+
+module.exports = uuid;
+
+
+/***/ }),
+
+/***/ "./node_modules/uuid/lib/bytesToUuid.js":
+/*!**********************************************!*\
+  !*** ./node_modules/uuid/lib/bytesToUuid.js ***!
+  \**********************************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+/**
+ * Convert array of 16 byte values to UUID string format of the form:
+ * XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX
+ */
+var byteToHex = [];
+for (var i = 0; i < 256; ++i) {
+  byteToHex[i] = (i + 0x100).toString(16).substr(1);
+}
+
+function bytesToUuid(buf, offset) {
+  var i = offset || 0;
+  var bth = byteToHex;
+  return bth[buf[i++]] + bth[buf[i++]] +
+          bth[buf[i++]] + bth[buf[i++]] + '-' +
+          bth[buf[i++]] + bth[buf[i++]] + '-' +
+          bth[buf[i++]] + bth[buf[i++]] + '-' +
+          bth[buf[i++]] + bth[buf[i++]] + '-' +
+          bth[buf[i++]] + bth[buf[i++]] +
+          bth[buf[i++]] + bth[buf[i++]] +
+          bth[buf[i++]] + bth[buf[i++]];
+}
+
+module.exports = bytesToUuid;
+
+
+/***/ }),
+
+/***/ "./node_modules/uuid/lib/rng-browser.js":
+/*!**********************************************!*\
+  !*** ./node_modules/uuid/lib/rng-browser.js ***!
+  \**********************************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+// Unique ID creation requires a high quality random # generator.  In the
+// browser this is a little complicated due to unknown quality of Math.random()
+// and inconsistent support for the `crypto` API.  We do the best we can via
+// feature-detection
+
+// getRandomValues needs to be invoked in a context where "this" is a Crypto implementation.
+var getRandomValues = (typeof(crypto) != 'undefined' && crypto.getRandomValues.bind(crypto)) ||
+                      (typeof(msCrypto) != 'undefined' && msCrypto.getRandomValues.bind(msCrypto));
+if (getRandomValues) {
+  // WHATWG crypto RNG - http://wiki.whatwg.org/wiki/Crypto
+  var rnds8 = new Uint8Array(16); // eslint-disable-line no-undef
+
+  module.exports = function whatwgRNG() {
+    getRandomValues(rnds8);
+    return rnds8;
+  };
+} else {
+  // Math.random()-based (RNG)
+  //
+  // If all else fails, use Math.random().  It's fast, but is of unspecified
+  // quality.
+  var rnds = new Array(16);
+
+  module.exports = function mathRNG() {
+    for (var i = 0, r; i < 16; i++) {
+      if ((i & 0x03) === 0) r = Math.random() * 0x100000000;
+      rnds[i] = r >>> ((i & 0x03) << 3) & 0xff;
+    }
+
+    return rnds;
+  };
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/uuid/v1.js":
+/*!*********************************!*\
+  !*** ./node_modules/uuid/v1.js ***!
+  \*********************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+var rng = __webpack_require__(/*! ./lib/rng */ "./node_modules/uuid/lib/rng-browser.js");
+var bytesToUuid = __webpack_require__(/*! ./lib/bytesToUuid */ "./node_modules/uuid/lib/bytesToUuid.js");
+
+// **`v1()` - Generate time-based UUID**
+//
+// Inspired by https://github.com/LiosK/UUID.js
+// and http://docs.python.org/library/uuid.html
+
+var _nodeId;
+var _clockseq;
+
+// Previous uuid creation time
+var _lastMSecs = 0;
+var _lastNSecs = 0;
+
+// See https://github.com/broofa/node-uuid for API details
+function v1(options, buf, offset) {
+  var i = buf && offset || 0;
+  var b = buf || [];
+
+  options = options || {};
+  var node = options.node || _nodeId;
+  var clockseq = options.clockseq !== undefined ? options.clockseq : _clockseq;
+
+  // node and clockseq need to be initialized to random values if they're not
+  // specified.  We do this lazily to minimize issues related to insufficient
+  // system entropy.  See #189
+  if (node == null || clockseq == null) {
+    var seedBytes = rng();
+    if (node == null) {
+      // Per 4.5, create and 48-bit node id, (47 random bits + multicast bit = 1)
+      node = _nodeId = [
+        seedBytes[0] | 0x01,
+        seedBytes[1], seedBytes[2], seedBytes[3], seedBytes[4], seedBytes[5]
+      ];
+    }
+    if (clockseq == null) {
+      // Per 4.2.2, randomize (14 bit) clockseq
+      clockseq = _clockseq = (seedBytes[6] << 8 | seedBytes[7]) & 0x3fff;
+    }
+  }
+
+  // UUID timestamps are 100 nano-second units since the Gregorian epoch,
+  // (1582-10-15 00:00).  JSNumbers aren't precise enough for this, so
+  // time is handled internally as 'msecs' (integer milliseconds) and 'nsecs'
+  // (100-nanoseconds offset from msecs) since unix epoch, 1970-01-01 00:00.
+  var msecs = options.msecs !== undefined ? options.msecs : new Date().getTime();
+
+  // Per 4.2.1.2, use count of uuid's generated during the current clock
+  // cycle to simulate higher resolution clock
+  var nsecs = options.nsecs !== undefined ? options.nsecs : _lastNSecs + 1;
+
+  // Time since last uuid creation (in msecs)
+  var dt = (msecs - _lastMSecs) + (nsecs - _lastNSecs)/10000;
+
+  // Per 4.2.1.2, Bump clockseq on clock regression
+  if (dt < 0 && options.clockseq === undefined) {
+    clockseq = clockseq + 1 & 0x3fff;
+  }
+
+  // Reset nsecs if clock regresses (new clockseq) or we've moved onto a new
+  // time interval
+  if ((dt < 0 || msecs > _lastMSecs) && options.nsecs === undefined) {
+    nsecs = 0;
+  }
+
+  // Per 4.2.1.2 Throw error if too many uuids are requested
+  if (nsecs >= 10000) {
+    throw new Error('uuid.v1(): Can\'t create more than 10M uuids/sec');
+  }
+
+  _lastMSecs = msecs;
+  _lastNSecs = nsecs;
+  _clockseq = clockseq;
+
+  // Per 4.1.4 - Convert from unix epoch to Gregorian epoch
+  msecs += 12219292800000;
+
+  // `time_low`
+  var tl = ((msecs & 0xfffffff) * 10000 + nsecs) % 0x100000000;
+  b[i++] = tl >>> 24 & 0xff;
+  b[i++] = tl >>> 16 & 0xff;
+  b[i++] = tl >>> 8 & 0xff;
+  b[i++] = tl & 0xff;
+
+  // `time_mid`
+  var tmh = (msecs / 0x100000000 * 10000) & 0xfffffff;
+  b[i++] = tmh >>> 8 & 0xff;
+  b[i++] = tmh & 0xff;
+
+  // `time_high_and_version`
+  b[i++] = tmh >>> 24 & 0xf | 0x10; // include version
+  b[i++] = tmh >>> 16 & 0xff;
+
+  // `clock_seq_hi_and_reserved` (Per 4.2.2 - include variant)
+  b[i++] = clockseq >>> 8 | 0x80;
+
+  // `clock_seq_low`
+  b[i++] = clockseq & 0xff;
+
+  // `node`
+  for (var n = 0; n < 6; ++n) {
+    b[i + n] = node[n];
+  }
+
+  return buf ? buf : bytesToUuid(b);
+}
+
+module.exports = v1;
+
+
+/***/ }),
+
+/***/ "./node_modules/uuid/v4.js":
+/*!*********************************!*\
+  !*** ./node_modules/uuid/v4.js ***!
+  \*********************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+var rng = __webpack_require__(/*! ./lib/rng */ "./node_modules/uuid/lib/rng-browser.js");
+var bytesToUuid = __webpack_require__(/*! ./lib/bytesToUuid */ "./node_modules/uuid/lib/bytesToUuid.js");
+
+function v4(options, buf, offset) {
+  var i = buf && offset || 0;
+
+  if (typeof(options) == 'string') {
+    buf = options === 'binary' ? new Array(16) : null;
+    options = null;
+  }
+  options = options || {};
+
+  var rnds = options.random || (options.rng || rng)();
+
+  // Per 4.4, set bits for version and `clock_seq_hi_and_reserved`
+  rnds[6] = (rnds[6] & 0x0f) | 0x40;
+  rnds[8] = (rnds[8] & 0x3f) | 0x80;
+
+  // Copy bytes to buffer, if provided
+  if (buf) {
+    for (var ii = 0; ii < 16; ++ii) {
+      buf[i + ii] = rnds[ii];
+    }
+  }
+
+  return buf || bytesToUuid(rnds);
+}
+
+module.exports = v4;
+
+
+/***/ }),
+
+/***/ "./src/ColorList/ColorList.js":
+/*!************************************!*\
+  !*** ./src/ColorList/ColorList.js ***!
+  \************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -21015,8 +21309,182 @@ module.exports = function (css) {
 
 
 Object.defineProperty(exports, "__esModule", {
-   value: true
+    value: true
 });
+
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+var _react = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+
+var _react2 = _interopRequireDefault(_react);
+
+var _propTypes = __webpack_require__(/*! prop-types */ "./node_modules/prop-types/index.js");
+
+var _propTypes2 = _interopRequireDefault(_propTypes);
+
+var _color = __webpack_require__(/*! color/color.js */ "./src/color/color.js");
+
+var _color2 = _interopRequireDefault(_color);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var ColorList = function ColorList(_ref) {
+    var _ref$colors = _ref.colors,
+        colors = _ref$colors === undefined ? [] : _ref$colors,
+        _ref$onRate = _ref.onRate,
+        _onRate = _ref$onRate === undefined ? function (f) {
+        return f;
+    } : _ref$onRate,
+        _ref$onRemove = _ref.onRemove,
+        _onRemove = _ref$onRemove === undefined ? function (f) {
+        return f;
+    } : _ref$onRemove;
+
+    return _react2.default.createElement(
+        'div',
+        { className: 'color-list' },
+        colors.length === 0 ? _react2.default.createElement(
+            'p',
+            null,
+            'No Colors Listed. (Add a Color)'
+        ) : colors.map(function (color) {
+            return _react2.default.createElement(_color2.default, _extends({ key: color.id
+            }, color, {
+                onRate: function onRate(rating) {
+                    return _onRate(color.id, rating);
+                },
+                onRemove: function onRemove() {
+                    return _onRemove(color.id);
+                } }));
+        })
+    );
+};
+
+ColorList.propTypes = {
+    colors: _propTypes2.default.array,
+    onRate: _propTypes2.default.func,
+    onRemove: _propTypes2.default.func
+};
+
+exports.default = ColorList;
+
+/***/ }),
+
+/***/ "./src/addColorForm/addColorForm.js":
+/*!******************************************!*\
+  !*** ./src/addColorForm/addColorForm.js ***!
+  \******************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _react = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+
+var _react2 = _interopRequireDefault(_react);
+
+var _propTypes = __webpack_require__(/*! prop-types */ "./node_modules/prop-types/index.js");
+
+var _propTypes2 = _interopRequireDefault(_propTypes);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var AddColorForm = function AddColorForm(_ref) {
+    var _ref$onNewColor = _ref.onNewColor,
+        onNewColor = _ref$onNewColor === undefined ? function (f) {
+        return f;
+    } : _ref$onNewColor;
+
+
+    var _title = void 0,
+        _color = void 0;
+
+    var submit = function submit(e) {
+        e.preventDefault();
+        onNewColor(_title.value, _color.value);
+        _title.value = '';
+        _color.value = '#000000';
+        _title.focus();
+    };
+
+    return _react2.default.createElement(
+        'form',
+        { className: 'add-color', onSubmit: submit },
+        _react2.default.createElement('input', { ref: function ref(input) {
+                return _title = input;
+            },
+            type: 'text',
+            placeholder: 'color title...', required: true }),
+        _react2.default.createElement('input', { ref: function ref(input) {
+                return _color = input;
+            },
+            type: 'color', required: true }),
+        _react2.default.createElement(
+            'button',
+            null,
+            'ADD'
+        )
+    );
+};
+
+AddColorForm.propTypes = {
+    onNewColor: _propTypes2.default.func
+};
+
+exports.default = AddColorForm;
+
+/***/ }),
+
+/***/ "./src/app/app.css":
+/*!*************************!*\
+  !*** ./src/app/app.css ***!
+  \*************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+
+var content = __webpack_require__(/*! !../../node_modules/css-loader!./app.css */ "./node_modules/css-loader/index.js!./src/app/app.css");
+
+if(typeof content === 'string') content = [[module.i, content, '']];
+
+var transform;
+var insertInto;
+
+
+
+var options = {"hmr":true}
+
+options.transform = transform
+options.insertInto = undefined;
+
+var update = __webpack_require__(/*! ../../node_modules/style-loader/lib/addStyles.js */ "./node_modules/style-loader/lib/addStyles.js")(content, options);
+
+if(content.locals) module.exports = content.locals;
+
+if(false) {}
+
+/***/ }),
+
+/***/ "./src/app/app.js":
+/*!************************!*\
+  !*** ./src/app/app.js ***!
+  \************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
@@ -21024,7 +21492,23 @@ var _react = __webpack_require__(/*! react */ "./node_modules/react/index.js");
 
 var _react2 = _interopRequireDefault(_react);
 
+var _uuid = __webpack_require__(/*! uuid */ "./node_modules/uuid/index.js");
+
+var _uuid2 = _interopRequireDefault(_uuid);
+
+var _addColorForm = __webpack_require__(/*! addColorForm/addColorForm */ "./src/addColorForm/addColorForm.js");
+
+var _addColorForm2 = _interopRequireDefault(_addColorForm);
+
+var _ColorList = __webpack_require__(/*! ColorList/ColorList */ "./src/ColorList/ColorList.js");
+
+var _ColorList2 = _interopRequireDefault(_ColorList);
+
+__webpack_require__(/*! ./app.css */ "./src/app/app.css");
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -21032,54 +21516,148 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-var AddColorForm = function (_React$Component) {
-   _inherits(AddColorForm, _React$Component);
+var App = function (_React$Component) {
+    _inherits(App, _React$Component);
 
-   function AddColorForm() {
-      var _ref;
+    function App(props) {
+        _classCallCheck(this, App);
 
-      var _temp, _this, _ret;
+        var _this = _possibleConstructorReturn(this, (App.__proto__ || Object.getPrototypeOf(App)).call(this, props));
 
-      _classCallCheck(this, AddColorForm);
+        _this.addColor = function (title, color) {
+            var colors = [].concat(_toConsumableArray(_this.state.colors), [{
+                id: (0, _uuid2.default)(),
+                title: title,
+                color: color,
+                rating: 0
+            }]);
 
-      for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
-         args[_key] = arguments[_key];
-      }
+            _this.setState({ colors: colors });
+        };
 
-      return _ret = (_temp = (_this = _possibleConstructorReturn(this, (_ref = AddColorForm.__proto__ || Object.getPrototypeOf(AddColorForm)).call.apply(_ref, [this].concat(args))), _this), _this.submit = function (e) {
-         var _this$refs = _this.refs,
-             _title = _this$refs._title,
-             _color = _this$refs._color;
+        _this.rateColor = function (id, rating) {
+            var colors = _this.state.colors.map(function (color) {
+                return color.id !== id ? color : _extends({}, color, { rating: rating });
+            });
 
-         e.preventDefault();
-         alert('New Color: ' + _title.value + ' ' + _color.value);
-         _title.value = '';
-         _color.value = '#000000';
-         _title.focus();
-      }, _temp), _possibleConstructorReturn(_this, _ret);
-   }
+            _this.setState({ colors: colors });
+        };
 
-   _createClass(AddColorForm, [{
-      key: 'render',
-      value: function render() {
-         return _react2.default.createElement(
-            'form',
-            { onSubmit: this.submit },
-            _react2.default.createElement('input', { ref: '_title', type: 'text', placeholder: 'color title...', required: true }),
-            _react2.default.createElement('input', { ref: '_color', type: 'color', required: true }),
-            _react2.default.createElement(
-               'button',
-               null,
-               'ADD'
-            )
-         );
-      }
-   }]);
+        _this.removeColor = function (id) {
+            var colors = _this.state.colors.filter(function (color) {
+                return color.id !== id;
+            });
 
-   return AddColorForm;
+            _this.setState({ colors: colors });
+        };
+
+        _this.state = {
+            colors: []
+        };
+        return _this;
+    }
+
+    _createClass(App, [{
+        key: 'render',
+        value: function render() {
+            console.log('app.render');
+            var addColor = this.addColor,
+                rateColor = this.rateColor,
+                removeColor = this.removeColor;
+            var colors = this.state.colors;
+
+            return _react2.default.createElement(
+                'div',
+                { className: 'app' },
+                _react2.default.createElement(_addColorForm2.default, { onNewColor: addColor }),
+                _react2.default.createElement(_ColorList2.default, {
+                    colors: colors,
+                    onRate: rateColor,
+                    onRemove: removeColor })
+            );
+        }
+    }]);
+
+    return App;
 }(_react2.default.Component);
 
-exports.default = AddColorForm;
+exports.default = App;
+
+/***/ }),
+
+/***/ "./src/color/color.js":
+/*!****************************!*\
+  !*** ./src/color/color.js ***!
+  \****************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _react = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+
+var _react2 = _interopRequireDefault(_react);
+
+var _propTypes = __webpack_require__(/*! prop-types */ "./node_modules/prop-types/index.js");
+
+var _propTypes2 = _interopRequireDefault(_propTypes);
+
+var _starRating = __webpack_require__(/*! starRating/starRating */ "./src/starRating/starRating.js");
+
+var _starRating2 = _interopRequireDefault(_starRating);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var Color = function Color(_ref) {
+    var title = _ref.title,
+        color = _ref.color,
+        _ref$rating = _ref.rating,
+        rating = _ref$rating === undefined ? 0 : _ref$rating,
+        _ref$onRemove = _ref.onRemove,
+        onRemove = _ref$onRemove === undefined ? function (f) {
+        return f;
+    } : _ref$onRemove,
+        _ref$onRate = _ref.onRate,
+        onRate = _ref$onRate === undefined ? function (f) {
+        return f;
+    } : _ref$onRate;
+    return _react2.default.createElement(
+        'section',
+        { className: 'color' },
+        _react2.default.createElement(
+            'h1',
+            null,
+            title
+        ),
+        _react2.default.createElement(
+            'button',
+            { onClick: onRemove },
+            'X'
+        ),
+        _react2.default.createElement('div', { className: 'color',
+            style: { backgroundColor: color } }),
+        _react2.default.createElement(
+            'div',
+            null,
+            _react2.default.createElement(_starRating2.default, { starsSelected: rating, onRate: onRate })
+        )
+    );
+};
+
+Color.propTypes = {
+    title: _propTypes2.default.string.isRequired,
+    color: _propTypes2.default.string.isRequired,
+    rating: _propTypes2.default.number,
+    onRemove: _propTypes2.default.func,
+    onRate: _propTypes2.default.func
+};
+
+exports.default = Color;
 
 /***/ }),
 
@@ -21101,35 +21679,25 @@ var _reactDom = __webpack_require__(/*! react-dom */ "./node_modules/react-dom/i
 
 var _reactDom2 = _interopRequireDefault(_reactDom);
 
-var _addColorForm = __webpack_require__(/*! ./addColorForm */ "./src/addColorForm.js");
+var _app = __webpack_require__(/*! app/app.js */ "./src/app/app.js");
 
-var _addColorForm2 = _interopRequireDefault(_addColorForm);
-
-var _star = __webpack_require__(/*! ./star */ "./src/star.js");
-
-var _star2 = _interopRequireDefault(_star);
+var _app2 = _interopRequireDefault(_app);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var container = document.getElementById("react-container");
-_reactDom2.default.render(_react2.default.createElement(
-    'div',
-    null,
-    _react2.default.createElement(_addColorForm2.default, null),
-    _react2.default.createElement(_star2.default, null)
-), container);
+_reactDom2.default.render(_react2.default.createElement(_app2.default, null), document.getElementById("react-container"));
 
 /***/ }),
 
-/***/ "./src/star.css":
-/*!**********************!*\
-  !*** ./src/star.css ***!
-  \**********************/
+/***/ "./src/star/star.css":
+/*!***************************!*\
+  !*** ./src/star/star.css ***!
+  \***************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
 
-var content = __webpack_require__(/*! !../node_modules/css-loader!./star.css */ "./node_modules/css-loader/index.js!./src/star.css");
+var content = __webpack_require__(/*! !../../node_modules/css-loader!./star.css */ "./node_modules/css-loader/index.js!./src/star/star.css");
 
 if(typeof content === 'string') content = [[module.i, content, '']];
 
@@ -21143,7 +21711,7 @@ var options = {"hmr":true}
 options.transform = transform
 options.insertInto = undefined;
 
-var update = __webpack_require__(/*! ../node_modules/style-loader/lib/addStyles.js */ "./node_modules/style-loader/lib/addStyles.js")(content, options);
+var update = __webpack_require__(/*! ../../node_modules/style-loader/lib/addStyles.js */ "./node_modules/style-loader/lib/addStyles.js")(content, options);
 
 if(content.locals) module.exports = content.locals;
 
@@ -21151,10 +21719,10 @@ if(false) {}
 
 /***/ }),
 
-/***/ "./src/star.js":
-/*!*********************!*\
-  !*** ./src/star.js ***!
-  \*********************/
+/***/ "./src/star/star.js":
+/*!**************************!*\
+  !*** ./src/star/star.js ***!
+  \**************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -21173,7 +21741,7 @@ var _propTypes = __webpack_require__(/*! prop-types */ "./node_modules/prop-type
 
 var _propTypes2 = _interopRequireDefault(_propTypes);
 
-__webpack_require__(/*! ./star.css */ "./src/star.css");
+__webpack_require__(/*! ./star.css */ "./src/star/star.css");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -21193,6 +21761,108 @@ Star.propTypes = {
 };
 
 exports.default = Star;
+
+/***/ }),
+
+/***/ "./src/starRating/starRating.css":
+/*!***************************************!*\
+  !*** ./src/starRating/starRating.css ***!
+  \***************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+
+var content = __webpack_require__(/*! !../../node_modules/css-loader!./starRating.css */ "./node_modules/css-loader/index.js!./src/starRating/starRating.css");
+
+if(typeof content === 'string') content = [[module.i, content, '']];
+
+var transform;
+var insertInto;
+
+
+
+var options = {"hmr":true}
+
+options.transform = transform
+options.insertInto = undefined;
+
+var update = __webpack_require__(/*! ../../node_modules/style-loader/lib/addStyles.js */ "./node_modules/style-loader/lib/addStyles.js")(content, options);
+
+if(content.locals) module.exports = content.locals;
+
+if(false) {}
+
+/***/ }),
+
+/***/ "./src/starRating/starRating.js":
+/*!**************************************!*\
+  !*** ./src/starRating/starRating.js ***!
+  \**************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _react = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+
+var _react2 = _interopRequireDefault(_react);
+
+var _propTypes = __webpack_require__(/*! prop-types */ "./node_modules/prop-types/index.js");
+
+var _propTypes2 = _interopRequireDefault(_propTypes);
+
+var _star = __webpack_require__(/*! star/star.js */ "./src/star/star.js");
+
+var _star2 = _interopRequireDefault(_star);
+
+__webpack_require__(/*! ./starRating.css */ "./src/starRating/starRating.css");
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
+
+var StarRating = function StarRating(_ref) {
+    var _ref$starsSelected = _ref.starsSelected,
+        starsSelected = _ref$starsSelected === undefined ? 0 : _ref$starsSelected,
+        _ref$totalStars = _ref.totalStars,
+        totalStars = _ref$totalStars === undefined ? 5 : _ref$totalStars,
+        _ref$onRate = _ref.onRate,
+        onRate = _ref$onRate === undefined ? function (f) {
+        return f;
+    } : _ref$onRate;
+    return _react2.default.createElement(
+        'div',
+        { className: 'star-rating' },
+        [].concat(_toConsumableArray(Array(totalStars))).map(function (n, i) {
+            return _react2.default.createElement(_star2.default, { key: i,
+                selected: i < starsSelected,
+                onClick: function onClick() {
+                    return onRate(i + 1);
+                } });
+        }),
+        _react2.default.createElement(
+            'p',
+            null,
+            starsSelected,
+            ' of ',
+            totalStars,
+            ' stars'
+        )
+    );
+};
+
+StarRating.propTypes = {
+    starsSelected: _propTypes2.default.number,
+    totalStars: _propTypes2.default.number,
+    onRate: _propTypes2.default.func
+};
+
+exports.default = StarRating;
 
 /***/ })
 

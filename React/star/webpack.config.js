@@ -22,6 +22,13 @@ module.exports = {
             },           
         ]
     },
+    // для того чтобы резолвились абсолютные пути
+    resolve: {
+        modules: [
+          path.resolve('./src'), 
+          path.resolve('./node_modules')
+        ]
+    },    
     plugins: [
         new CopyWebpackPlugin([ { from: 'src/index.html', to: 'index.html' }] , {debug: 'info'})
     ]    
