@@ -1,17 +1,14 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import StarRating from 'starRating/starRating'
+import './color.css'
 
 const Color = ({ title, color, rating=0, onRemove=f=>f, onRate=f=>f}) =>
     <section className="color">
         <h1>{title}</h1>
         <button onClick={onRemove}>X</button>
-        <div className="color"
-             style={{ backgroundColor: color }}>
-        </div>
-        <div>
-            <StarRating starsSelected={rating} onRate={onRate}/>
-        </div>
+        <div style={{ backgroundColor: color, height:'50px' }}/>
+        <StarRating starsSelected={rating} onRate={onRate}/>        
     </section>
 
 Color.propTypes = {

@@ -1,0 +1,5 @@
+.color-list {
+    display: flex;
+    flex-wrap: wrap;
+    flex: 200px;
+}

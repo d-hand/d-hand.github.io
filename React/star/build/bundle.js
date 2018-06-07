@@ -86,6 +86,25 @@
 /************************************************************************/
 /******/ ({
 
+/***/ "./node_modules/css-loader/index.js!./src/ColorList/colorList.css":
+/*!***************************************************************!*\
+  !*** ./node_modules/css-loader!./src/ColorList/colorList.css ***!
+  \***************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(/*! ../../node_modules/css-loader/lib/css-base.js */ "./node_modules/css-loader/lib/css-base.js")(false);
+// imports
+
+
+// module
+exports.push([module.i, ".color-list {\r\n    display: flex;\r\n    flex-wrap: wrap;\r\n    flex: 200px;\r\n}", ""]);
+
+// exports
+
+
+/***/ }),
+
 /***/ "./node_modules/css-loader/index.js!./src/app/app.css":
 /*!***************************************************!*\
   !*** ./node_modules/css-loader!./src/app/app.css ***!
@@ -99,6 +118,25 @@ exports = module.exports = __webpack_require__(/*! ../../node_modules/css-loader
 
 // module
 exports.push([module.i, "", ""]);
+
+// exports
+
+
+/***/ }),
+
+/***/ "./node_modules/css-loader/index.js!./src/color/color.css":
+/*!*******************************************************!*\
+  !*** ./node_modules/css-loader!./src/color/color.css ***!
+  \*******************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(/*! ../../node_modules/css-loader/lib/css-base.js */ "./node_modules/css-loader/lib/css-base.js")(false);
+// imports
+
+
+// module
+exports.push([module.i, ".color {\r\n  display: flex;\r\n  flex-direction: column; \r\n  margin: 0 5px;  \r\n}\r\n\r\n", ""]);
 
 // exports
 
@@ -136,7 +174,7 @@ exports = module.exports = __webpack_require__(/*! ../../node_modules/css-loader
 
 
 // module
-exports.push([module.i, ".star-rating {\r\n    display: flex;\r\n    flex-wrap: wrap;\r\n    justify-content: space-around;\r\n  }", ""]);
+exports.push([module.i, ".star-rating {\r\n  display: flex;\r\n}\r\n", ""]);
 
 // exports
 
@@ -21326,6 +21364,8 @@ var _color = __webpack_require__(/*! color/color.js */ "./src/color/color.js");
 
 var _color2 = _interopRequireDefault(_color);
 
+__webpack_require__(/*! ./colorList.css */ "./src/ColorList/colorList.css");
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var ColorList = function ColorList(_ref) {
@@ -21367,6 +21407,36 @@ ColorList.propTypes = {
 };
 
 exports.default = ColorList;
+
+/***/ }),
+
+/***/ "./src/ColorList/colorList.css":
+/*!*************************************!*\
+  !*** ./src/ColorList/colorList.css ***!
+  \*************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+
+var content = __webpack_require__(/*! !../../node_modules/css-loader!./colorList.css */ "./node_modules/css-loader/index.js!./src/ColorList/colorList.css");
+
+if(typeof content === 'string') content = [[module.i, content, '']];
+
+var transform;
+var insertInto;
+
+
+
+var options = {"hmr":true}
+
+options.transform = transform
+options.insertInto = undefined;
+
+var update = __webpack_require__(/*! ../../node_modules/style-loader/lib/addStyles.js */ "./node_modules/style-loader/lib/addStyles.js")(content, options);
+
+if(content.locals) module.exports = content.locals;
+
+if(false) {}
 
 /***/ }),
 
@@ -21585,6 +21655,36 @@ exports.default = App;
 
 /***/ }),
 
+/***/ "./src/color/color.css":
+/*!*****************************!*\
+  !*** ./src/color/color.css ***!
+  \*****************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+
+var content = __webpack_require__(/*! !../../node_modules/css-loader!./color.css */ "./node_modules/css-loader/index.js!./src/color/color.css");
+
+if(typeof content === 'string') content = [[module.i, content, '']];
+
+var transform;
+var insertInto;
+
+
+
+var options = {"hmr":true}
+
+options.transform = transform
+options.insertInto = undefined;
+
+var update = __webpack_require__(/*! ../../node_modules/style-loader/lib/addStyles.js */ "./node_modules/style-loader/lib/addStyles.js")(content, options);
+
+if(content.locals) module.exports = content.locals;
+
+if(false) {}
+
+/***/ }),
+
 /***/ "./src/color/color.js":
 /*!****************************!*\
   !*** ./src/color/color.js ***!
@@ -21610,6 +21710,8 @@ var _propTypes2 = _interopRequireDefault(_propTypes);
 var _starRating = __webpack_require__(/*! starRating/starRating */ "./src/starRating/starRating.js");
 
 var _starRating2 = _interopRequireDefault(_starRating);
+
+__webpack_require__(/*! ./color.css */ "./src/color/color.css");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -21639,13 +21741,8 @@ var Color = function Color(_ref) {
             { onClick: onRemove },
             'X'
         ),
-        _react2.default.createElement('div', { className: 'color',
-            style: { backgroundColor: color } }),
-        _react2.default.createElement(
-            'div',
-            null,
-            _react2.default.createElement(_starRating2.default, { starsSelected: rating, onRate: onRate })
-        )
+        _react2.default.createElement('div', { style: { backgroundColor: color, height: '50px' } }),
+        _react2.default.createElement(_starRating2.default, { starsSelected: rating, onRate: onRate })
     );
 };
 
@@ -21837,17 +21934,21 @@ var StarRating = function StarRating(_ref) {
     } : _ref$onRate;
     return _react2.default.createElement(
         'div',
-        { className: 'star-rating' },
-        [].concat(_toConsumableArray(Array(totalStars))).map(function (n, i) {
-            return _react2.default.createElement(_star2.default, { key: i,
-                selected: i < starsSelected,
-                onClick: function onClick() {
-                    return onRate(i + 1);
-                } });
-        }),
+        null,
+        _react2.default.createElement(
+            'div',
+            { className: 'star-rating' },
+            [].concat(_toConsumableArray(Array(totalStars))).map(function (n, i) {
+                return _react2.default.createElement(_star2.default, { key: i,
+                    selected: i < starsSelected,
+                    onClick: function onClick() {
+                        return onRate(i + 1);
+                    } });
+            })
+        ),
         _react2.default.createElement(
             'p',
-            null,
+            { style: { textAlign: 'center' } },
             starsSelected,
             ' of ',
             totalStars,
