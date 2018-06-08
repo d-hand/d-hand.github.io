@@ -1,7 +1,6 @@
 import React from 'react';
-import ReactDom from 'react-dom';
 
-class WorkerList extends React.Component {
+export default class WorkerList extends React.Component {
     constructor() {
         super();
         this.state = {
@@ -41,7 +40,7 @@ class WorkerList extends React.Component {
                 {(loading) 
                     ? <span>Loading Workers</span> 
                     : (workers.length) 
-                        ? workers.map((user, i) => <Worker key={i} {...user} />) 
+                        ? workers.map((worker, i) => <Worker key={i} {...worker} />) 
                         : <span>0 workers loaded...</span>}
 
                 {(error) ? <p>Error Loading Workers: error</p> : ""}
@@ -56,5 +55,3 @@ const Worker = ({ email, picture, name, location }) =>
         <p><a href={"mailto:" + email}>{email}</a></p>
         <p>{location.city}, {location.state}</p>
     </div>
-
-ReactDom.render(<WorkerList count={2}/>, document.getElementById("react-container"));
