@@ -20543,6 +20543,13 @@ var Message = function (_React$Component2) {
         value: function componentWillReceiveProps(nextProps) {
             this.setState({ hidden: nextProps.hide });
         }
+
+        /*
+        Единственная причина, по которой когда-либо придется
+        добавлять состояние к дочернему компоненту, может быть связана с необходимо-
+        стью что-либо изменять внутри данного компонента (onMouseEnter={this.show}   onMouseLeave={this.hide} )
+         */
+
     }, {
         key: 'render',
         value: function render() {

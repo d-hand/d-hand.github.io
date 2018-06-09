@@ -60,6 +60,11 @@ class Message extends React.Component {
         this.setState({hidden: nextProps.hide})
     }
 
+    /*
+Единственная причина, по которой когда-либо придется
+добавлять состояние к дочернему компоненту, может быть связана с необходимо-
+стью что-либо изменять внутри данного компонента (onMouseEnter={this.show}   onMouseLeave={this.hide} )
+     */
     hide = () => {
         const showByUser = false
         this.setState({showByUser})
