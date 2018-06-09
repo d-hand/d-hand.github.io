@@ -1,7 +1,11 @@
 .lifecycle-container {
     display: flex;
     flex-wrap: wrap;
-    flex: 200px;
+    flex: 400px;
     justify-content: space-between;
     
+}
+
+.rotation-message {
+    width: 400px
 }

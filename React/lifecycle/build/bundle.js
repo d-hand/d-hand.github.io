@@ -86,10 +86,10 @@
 /************************************************************************/
 /******/ ({
 
-/***/ "./node_modules/css-loader/index.js!./src/index.css":
-/*!*************************************************!*\
-  !*** ./node_modules/css-loader!./src/index.css ***!
-  \*************************************************/
+/***/ "./node_modules/css-loader/index.js!./src/global.css":
+/*!**************************************************!*\
+  !*** ./node_modules/css-loader!./src/global.css ***!
+  \**************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -98,7 +98,7 @@ exports = module.exports = __webpack_require__(/*! ../node_modules/css-loader/li
 
 
 // module
-exports.push([module.i, ".lifecycle-container {\r\n    display: flex;\r\n    flex-wrap: wrap;\r\n    flex: 200px;\r\n    justify-content: space-between;\r\n    \r\n}", ""]);
+exports.push([module.i, ".lifecycle-container {\r\n    display: flex;\r\n    flex-wrap: wrap;\r\n    flex: 400px;\r\n    justify-content: space-between;\r\n    \r\n}\r\n\r\n.rotation-message {\r\n    width: 400px\r\n}", ""]);
 
 // exports
 
@@ -20435,6 +20435,8 @@ var _react = __webpack_require__(/*! react */ "./node_modules/react/index.js");
 
 var _react2 = _interopRequireDefault(_react);
 
+__webpack_require__(/*! global.css */ "./src/global.css");
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -20459,7 +20461,7 @@ var RotationMessages = function (_React$Component) {
     }
 
     _createClass(RotationMessages, [{
-        key: "componentWillMount",
+        key: 'componentWillMount',
         value: function componentWillMount() {
             var _this2 = this;
 
@@ -20473,20 +20475,20 @@ var RotationMessages = function (_React$Component) {
             }, 1000);
         }
     }, {
-        key: "componentWillUnmount",
+        key: 'componentWillUnmount',
         value: function componentWillUnmount() {
             clearInterval(this.interval);
         }
     }, {
-        key: "render",
+        key: 'render',
         value: function render() {
             var _state2 = this.state,
                 messages = _state2.messages,
                 showing = _state2.showing;
 
             return _react2.default.createElement(
-                "div",
-                { className: "hidden-messages" },
+                'div',
+                { className: 'hidden-messages' },
                 messages.map(function (message, i) {
                     return _react2.default.createElement(
                         Message,
@@ -20511,6 +20513,16 @@ var Message = function (_React$Component2) {
 
         var _this3 = _possibleConstructorReturn(this, (Message.__proto__ || Object.getPrototypeOf(Message)).call(this, props));
 
+        _this3.hide = function () {
+            var showByUser = false;
+            _this3.setState({ showByUser: showByUser });
+        };
+
+        _this3.show = function () {
+            var showByUser = true;
+            _this3.setState({ showByUser: showByUser });
+        };
+
         _this3.state = {
             hidden: props.hide ? props.hide : true
         };
@@ -20518,27 +20530,33 @@ var Message = function (_React$Component2) {
     }
 
     /*
-        Для подобных сценариев был создан метод жизненного цикла componentWillReceiveProps.
-        Он будет вызываться, когда родительский компонент изменил свой-
-        ства, и они могут использоваться для изменения состояния изнутри    
+        Иногда наши компоненты сохраняют состояние, которое изначально устанавли-
+    вается на основе свойств. Исходное состояние наших классов компонентов можно
+    установить в конструкторе или в методе жизненного цикла componentWillMount.
+    Когда эти свойства изменяются, приходится обновлять состояние с помощью ме-
+    тода componentWillReceiveProps.    
     */
 
 
     _createClass(Message, [{
-        key: "componentWillReceiveProps",
+        key: 'componentWillReceiveProps',
         value: function componentWillReceiveProps(nextProps) {
             this.setState({ hidden: nextProps.hide });
         }
     }, {
-        key: "render",
+        key: 'render',
         value: function render() {
             var children = this.props.children;
-            var hidden = this.state.hidden;
+            var _state3 = this.state,
+                hidden = _state3.hidden,
+                showByUser = _state3.showByUser;
 
             return _react2.default.createElement(
-                "p",
-                null,
-                hidden ? children.replace(/[a-zA-Z0-9]/g, "x") : children
+                'p',
+                { onMouseEnter: this.show,
+                    onMouseLeave: this.hide,
+                    className: 'rotation-message' },
+                hidden && !showByUser ? children.replace(/[a-zA-Z0-9]/g, "x") : children
             );
         }
     }]);
@@ -20700,15 +20718,15 @@ var Worker = function Worker(_ref) {
 
 /***/ }),
 
-/***/ "./src/index.css":
-/*!***********************!*\
-  !*** ./src/index.css ***!
-  \***********************/
+/***/ "./src/global.css":
+/*!************************!*\
+  !*** ./src/global.css ***!
+  \************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
 
-var content = __webpack_require__(/*! !../node_modules/css-loader!./index.css */ "./node_modules/css-loader/index.js!./src/index.css");
+var content = __webpack_require__(/*! !../node_modules/css-loader!./global.css */ "./node_modules/css-loader/index.js!./src/global.css");
 
 if(typeof content === 'string') content = [[module.i, content, '']];
 
@@ -20756,7 +20774,7 @@ var _RotationMessages = __webpack_require__(/*! RotationMessages */ "./src/Rotat
 
 var _RotationMessages2 = _interopRequireDefault(_RotationMessages);
 
-__webpack_require__(/*! index.css */ "./src/index.css");
+__webpack_require__(/*! global.css */ "./src/global.css");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 

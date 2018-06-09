@@ -1,4 +1,5 @@
 import React from 'react';
+import 'global.css'
 
 export default class RotationMessages extends React.Component {
     constructor(props) {
@@ -49,20 +50,36 @@ class Message extends React.Component {
     }
 
     /*
-        Для подобных сценариев был создан метод жизненного цикла componentWillReceiveProps.
-        Он будет вызываться, когда родительский компонент изменил свой-
-        ства, и они могут использоваться для изменения состояния изнутри    
+        Иногда наши компоненты сохраняют состояние, которое изначально устанавли-
+вается на основе свойств. Исходное состояние наших классов компонентов можно
+установить в конструкторе или в методе жизненного цикла componentWillMount.
+Когда эти свойства изменяются, приходится обновлять состояние с помощью ме-
+тода componentWillReceiveProps.    
     */
     componentWillReceiveProps(nextProps) {
         this.setState({hidden: nextProps.hide})
     }
 
+    hide = () => {
+        const showByUser = false
+        this.setState({showByUser})
+    }
+
+    show = () => {
+        const showByUser = true
+        this.setState({showByUser})
+    }
+
     render() {
         const { children } = this.props
-        const { hidden } = this.state
+        const { hidden, showByUser } = this.state
         return (
-            <p>
-                {(hidden) ? children.replace(/[a-zA-Z0-9]/g, "x") : children }
+            <p  onMouseEnter={this.show} 
+                onMouseLeave={this.hide}
+                className='rotation-message'>
+                { 
+                    hidden && !showByUser ? children.replace(/[a-zA-Z0-9]/g, "x") : children 
+                }
             </p>
         )
     }
