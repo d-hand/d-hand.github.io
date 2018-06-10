@@ -1,5 +1,4 @@
 import React from 'react';
-import 'global.css'
 
 export default class RotationMessages extends React.Component {
     constructor(props) {

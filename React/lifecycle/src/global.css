@@ -9,3 +9,8 @@
 .rotation-message {
     width: 400px
 }
+
+.country-list-comment {
+    font-size: small;    
+    font-style: italic
+}

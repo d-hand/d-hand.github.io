@@ -12,6 +12,7 @@
     "babel-preset-react": "^6.24.1",
     "copy-webpack-plugin": "^4.5.1",
     "css-loader": "^0.28.11",
+    "isomorphic-fetch": "^2.2.1",
     "react": "^16.4.0",
     "react-dom": "^16.4.0",
     "style-loader": "^0.21.0",

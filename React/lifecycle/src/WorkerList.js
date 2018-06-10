@@ -11,6 +11,10 @@ export default class WorkerList extends React.Component {
     }    
 
     componentWillMount() {
+        this.willGetFakeWorkers()
+    }
+
+    willGetFakeWorkers = () => {
         this.setState({loading: true});
         this.getFakeWorkers(this.props.count).then(
             workers => this.setState({workers, loading: false}),
@@ -36,7 +40,7 @@ export default class WorkerList extends React.Component {
     render() {
         const { workers, loading, error } = this.state
         return (
-            <div className="worker-list">
+            <div className="worker-list" onClick={this.willGetFakeWorkers}>
                 {(loading) 
                     ? <span>Loading Workers</span> 
                     : (workers.length) 
