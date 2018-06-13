@@ -14,3 +14,17 @@
     font-size: small;    
     font-style: italic
 }
+
+.timeline {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    
+    /* border-color: red;
+    border-style: solid; */
+}
+
+.timeline>div {
+    flex: 0 50%;
+    text-align: center;
+}
