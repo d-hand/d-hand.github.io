@@ -24,7 +24,10 @@
     border-style: solid; */
 }
 
-.timeline>div {
+.timeline>* {
     flex: 0 50%;
     text-align: center;
+    margin: 5px;
+    /* border-color: red; */
+    border-style: solid;    
 }

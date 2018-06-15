@@ -6,7 +6,8 @@ export default class Timeline extends React.Component {
         super(props); 
         const data = props.data        
         const times = d3.extent(data.map(d => d.year))
-        const range = [50, 450]
+        const range = [50, 450]        
+        this.scale = d3.time.scale().domain(times).range(range)
         this.state = {data, times, range}        
     }
 
@@ -50,48 +51,36 @@ export default class Timeline extends React.Component {
                 event: "Plastic Buckle Boots Available"
             }
         ]
-    }
-    
-    componentDidMount() {
-        let group
-        const { data, times, range } = this.state
-        const { target } = this.refs
-        const scale = d3.time.scale().domain(times).range(range)
-
-        d3.select(target)
-            .append('svg')
-            .attr('height', 200)
-            .attr('width', 800)
-
-        group = d3.select(target.children[0])
-            .selectAll('g')
-            .data(data)
-            .enter()
-            .append('g')
-            .attr(
-            'transform',
-            (d, i) => 'translate(' + scale(d.year) + ', 0)'
-        )
-
-        group.append('circle')
-            .attr('cy', 160)
-            .attr('r', 5)
-            .style('fill', 'blue')
-
-        group.append('text')
-            .text(d => d.year + " - " + d.event)
-            .style('font-size', 10)
-            .attr('y', 115)
-            .attr('x', -95)
-            .attr('transform', 'rotate(-45)')
-    }
+    }    
 
     render() {
+        const { data } = this.state
+        const { scale } = this
         return (
             <div className="timeline">
                 <div>Timeline: {this.props.name} </div>
-                <div ref="target"></div>                
+                <Canvas>
+                    {data.map((d, i) =>
+                        <TimelineDot position={scale(d.year)} txt={`${d.year} - ${d.event}`} />
+                    )}
+                </Canvas>
             </div>
         )
-    }           
+    }               
 }
+
+const Canvas = ({children}) =>
+    <svg height="200" width="500">
+        {children}
+    </svg>
+
+const TimelineDot = ({position, txt}) =>
+    <g transform={`translate(${position},0)`}>
+        <circle cy={160}
+                r={5}
+                style={{fill: 'blue'}} />
+        <text y={115}
+              x={-95}
+              transform="rotate(-45)"
+              style={{fontSize: '10px'}}>{txt}</text>
+    </g>

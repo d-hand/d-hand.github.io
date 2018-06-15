@@ -98,7 +98,7 @@ exports = module.exports = __webpack_require__(/*! ../node_modules/css-loader/li
 
 
 // module
-exports.push([module.i, ".lifecycle-container {\r\n    display: flex;\r\n    flex-wrap: wrap;\r\n    flex: 400px;\r\n    justify-content: space-between;\r\n    \r\n}\r\n\r\n.rotation-message {\r\n    width: 400px\r\n}\r\n\r\n.country-list-comment {\r\n    font-size: small;    \r\n    font-style: italic\r\n}\r\n\r\n.timeline {\r\n    display: flex;\r\n    flex-wrap: wrap;\r\n    justify-content: center;\r\n    \r\n    /* border-color: red;\r\n    border-style: solid; */\r\n}\r\n\r\n.timeline>div {\r\n    flex: 0 50%;\r\n    text-align: center;\r\n}\r\n", ""]);
+exports.push([module.i, ".lifecycle-container {\r\n    display: flex;\r\n    flex-wrap: wrap;\r\n    flex: 400px;\r\n    justify-content: space-between;\r\n    \r\n}\r\n\r\n.rotation-message {\r\n    width: 400px\r\n}\r\n\r\n.country-list-comment {\r\n    font-size: small;    \r\n    font-style: italic\r\n}\r\n\r\n.timeline {\r\n    display: flex;\r\n    flex-wrap: wrap;\r\n    justify-content: center;\r\n    \r\n    /* border-color: red;\r\n    border-style: solid; */\r\n}\r\n\r\n.timeline>* {\r\n    flex: 0 50%;\r\n    text-align: center;\r\n    margin: 5px;\r\n    /* border-color: red; */\r\n    border-style: solid;    \r\n}\r\n", ""]);
 
 // exports
 
@@ -31392,37 +31392,17 @@ var Timeline = function (_React$Component) {
             return d.year;
         }));
         var range = [50, 450];
+        _this.scale = _d2.default.time.scale().domain(times).range(range);
         _this.state = { data: data, times: times, range: range };
         return _this;
     }
 
     _createClass(Timeline, [{
-        key: 'componentDidMount',
-        value: function componentDidMount() {
-            var group = void 0;
-            var _state = this.state,
-                data = _state.data,
-                times = _state.times,
-                range = _state.range;
-            var target = this.refs.target;
-
-            var scale = _d2.default.time.scale().domain(times).range(range);
-
-            _d2.default.select(target).append('svg').attr('height', 200).attr('width', 800);
-
-            group = _d2.default.select(target.children[0]).selectAll('g').data(data).enter().append('g').attr('transform', function (d, i) {
-                return 'translate(' + scale(d.year) + ', 0)';
-            });
-
-            group.append('circle').attr('cy', 160).attr('r', 5).style('fill', 'blue');
-
-            group.append('text').text(function (d) {
-                return d.year + " - " + d.event;
-            }).style('font-size', 10).attr('y', 115).attr('x', -95).attr('transform', 'rotate(-45)');
-        }
-    }, {
         key: 'render',
         value: function render() {
+            var data = this.state.data;
+            var scale = this.scale;
+
             return _react2.default.createElement(
                 'div',
                 { className: 'timeline' },
@@ -31433,7 +31413,13 @@ var Timeline = function (_React$Component) {
                     this.props.name,
                     ' '
                 ),
-                _react2.default.createElement('div', { ref: 'target' })
+                _react2.default.createElement(
+                    Canvas,
+                    null,
+                    data.map(function (d, i) {
+                        return _react2.default.createElement(TimelineDot, { position: scale(d.year), txt: d.year + ' - ' + d.event });
+                    })
+                )
             );
         }
     }]);
@@ -31473,6 +31459,36 @@ Timeline.defaultProps = {
     }]
 };
 exports.default = Timeline;
+
+
+var Canvas = function Canvas(_ref) {
+    var children = _ref.children;
+    return _react2.default.createElement(
+        'svg',
+        { height: '200', width: '500' },
+        children
+    );
+};
+
+var TimelineDot = function TimelineDot(_ref2) {
+    var position = _ref2.position,
+        txt = _ref2.txt;
+    return _react2.default.createElement(
+        'g',
+        { transform: 'translate(' + position + ',0)' },
+        _react2.default.createElement('circle', { cy: 160,
+            r: 5,
+            style: { fill: 'blue' } }),
+        _react2.default.createElement(
+            'text',
+            { y: 115,
+                x: -95,
+                transform: 'rotate(-45)',
+                style: { fontSize: '10px' } },
+            txt
+        )
+    );
+};
 
 /***/ }),
 
