@@ -1,5 +1,5 @@
 {
-  "name": "star",
+  "name": "lifecycle",
   "author": "d_hand",
   "scripts": {
     "build": "webpack",
