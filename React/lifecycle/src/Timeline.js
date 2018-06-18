@@ -61,7 +61,7 @@ export default class Timeline extends React.Component {
                 <div>Timeline: {this.props.name} </div>
                 <Canvas>
                     {data.map((d, i) =>
-                        <TimelineDot position={scale(d.year)} txt={`${d.year} - ${d.event}`} />
+                        <TimelineDot position={scale(d.year)} key={i} txt={`${d.year} - ${d.event}`} />
                     )}
                 </Canvas>
             </div>

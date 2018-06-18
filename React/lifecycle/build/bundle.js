@@ -31417,7 +31417,7 @@ var Timeline = function (_React$Component) {
                     Canvas,
                     null,
                     data.map(function (d, i) {
-                        return _react2.default.createElement(TimelineDot, { position: scale(d.year), txt: d.year + ' - ' + d.event });
+                        return _react2.default.createElement(TimelineDot, { position: scale(d.year), key: i, txt: d.year + ' - ' + d.event });
                     })
                 )
             );
