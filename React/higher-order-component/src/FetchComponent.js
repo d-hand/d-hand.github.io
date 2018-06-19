@@ -34,4 +34,23 @@ const FetchComponent = (ComposedComponent, url) =>
     }
 }
 
-export default FetchComponent;
+const PeopleListInternal = ({data}) =>
+    <ol className="people-list">
+        {data.results.map((person, i) => {
+            const {first, last} = person.name
+            return <li key={i}>{first} {last}</li>
+        })}
+    </ol>
+
+const CountryNamesInternal = ({data, selected=""}) =>
+    <select className="people-list" defaultValue={selected}>
+        {data.map(({name}, i) =>
+            <option key={i} value={name}>{name}</option>
+        )}
+    </select>
+
+const PeopleList = FetchComponent(PeopleListInternal,  "https://randomuser.me/api?results=10")
+const CountryNames = FetchComponent(CountryNamesInternal, "https://restcountries.eu/rest/v1/all")
+
+
+export { PeopleList, CountryNames }

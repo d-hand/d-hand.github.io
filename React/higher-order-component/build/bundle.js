@@ -20312,10 +20312,10 @@ if (false) {} else {
 
 /***/ }),
 
-/***/ "./src/CountryNames.js":
-/*!*****************************!*\
-  !*** ./src/CountryNames.js ***!
-  \*****************************/
+/***/ "./src/Expandable.js":
+/*!***************************!*\
+  !*** ./src/Expandable.js ***!
+  \***************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -20325,36 +20325,88 @@ if (false) {} else {
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
+exports.MenuButton = exports.HiddenMessage = undefined;
+
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 var _react = __webpack_require__(/*! react */ "./node_modules/react/index.js");
 
 var _react2 = _interopRequireDefault(_react);
 
-var _FetchComponent = __webpack_require__(/*! FetchComponent */ "./src/FetchComponent.js");
-
-var _FetchComponent2 = _interopRequireDefault(_FetchComponent);
-
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var CountryNames = function CountryNames(_ref) {
-    var data = _ref.data,
-        _ref$selected = _ref.selected,
-        selected = _ref$selected === undefined ? "" : _ref$selected;
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var Expandable = function Expandable(ComposedComponent) {
+    return function (_React$Component) {
+        _inherits(Expandable, _React$Component);
+
+        function Expandable(props) {
+            _classCallCheck(this, Expandable);
+
+            var _this = _possibleConstructorReturn(this, (Expandable.__proto__ || Object.getPrototypeOf(Expandable)).call(this, props));
+
+            _this.expandCollapse = function () {
+                var collapsed = !_this.state.collapsed;
+                _this.setState({ collapsed: collapsed });
+            };
+
+            _this.state = { collapsed: !!props.hidden };
+            return _this;
+        }
+
+        _createClass(Expandable, [{
+            key: "render",
+            value: function render() {
+                return _react2.default.createElement(ComposedComponent, _extends({
+                    expandCollapse: this.expandCollapse
+                }, this.state, this.props));
+            }
+        }]);
+
+        return Expandable;
+    }(_react2.default.Component);
+};
+
+var HiddenMessageInternal = function HiddenMessageInternal(_ref) {
+    var children = _ref.children,
+        collapsed = _ref.collapsed,
+        expandCollapse = _ref.expandCollapse;
     return _react2.default.createElement(
-        'select',
-        { className: 'people-list', defaultValue: selected },
-        data.map(function (_ref2, i) {
-            var name = _ref2.name;
-            return _react2.default.createElement(
-                'option',
-                { key: i, value: name },
-                name
-            );
-        })
+        "p",
+        { onClick: expandCollapse },
+        collapsed ? children.replace(/[a-zA-Z0-9]/g, "x") : children
     );
 };
 
-exports.default = (0, _FetchComponent2.default)(CountryNames, "https://restcountries.eu/rest/v1/all");
+var MenuButtonInternal = function MenuButtonInternal(_ref2) {
+    var children = _ref2.children,
+        collapsed = _ref2.collapsed,
+        txt = _ref2.txt,
+        expandCollapse = _ref2.expandCollapse;
+    return _react2.default.createElement(
+        "div",
+        null,
+        _react2.default.createElement(
+            "button",
+            { onClick: expandCollapse },
+            txt
+        ),
+        !collapsed ? children : undefined
+    );
+};
+
+var HiddenMessage = Expandable(HiddenMessageInternal);
+var MenuButton = Expandable(MenuButtonInternal);
+
+exports.HiddenMessage = HiddenMessage;
+exports.MenuButton = MenuButton;
 
 /***/ }),
 
@@ -20371,6 +20423,7 @@ exports.default = (0, _FetchComponent2.default)(CountryNames, "https://restcount
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
+exports.CountryNames = exports.PeopleList = undefined;
 
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
@@ -20444,35 +20497,7 @@ var FetchComponent = function FetchComponent(ComposedComponent, url) {
     }(_react2.default.Component);
 };
 
-exports.default = FetchComponent;
-
-/***/ }),
-
-/***/ "./src/PeopleList.js":
-/*!***************************!*\
-  !*** ./src/PeopleList.js ***!
-  \***************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-
-var _react = __webpack_require__(/*! react */ "./node_modules/react/index.js");
-
-var _react2 = _interopRequireDefault(_react);
-
-var _FetchComponent = __webpack_require__(/*! FetchComponent */ "./src/FetchComponent.js");
-
-var _FetchComponent2 = _interopRequireDefault(_FetchComponent);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-var PeopleList = function PeopleList(_ref) {
+var PeopleListInternal = function PeopleListInternal(_ref) {
     var data = _ref.data;
     return _react2.default.createElement(
         'ol',
@@ -20493,7 +20518,29 @@ var PeopleList = function PeopleList(_ref) {
     );
 };
 
-exports.default = (0, _FetchComponent2.default)(PeopleList, "https://randomuser.me/api?results=10");
+var CountryNamesInternal = function CountryNamesInternal(_ref2) {
+    var data = _ref2.data,
+        _ref2$selected = _ref2.selected,
+        selected = _ref2$selected === undefined ? "" : _ref2$selected;
+    return _react2.default.createElement(
+        'select',
+        { className: 'people-list', defaultValue: selected },
+        data.map(function (_ref3, i) {
+            var name = _ref3.name;
+            return _react2.default.createElement(
+                'option',
+                { key: i, value: name },
+                name
+            );
+        })
+    );
+};
+
+var PeopleList = FetchComponent(PeopleListInternal, "https://randomuser.me/api?results=10");
+var CountryNames = FetchComponent(CountryNamesInternal, "https://restcountries.eu/rest/v1/all");
+
+exports.PeopleList = PeopleList;
+exports.CountryNames = CountryNames;
 
 /***/ }),
 
@@ -20515,21 +20562,36 @@ var _reactDom = __webpack_require__(/*! react-dom */ "./node_modules/react-dom/i
 
 var _reactDom2 = _interopRequireDefault(_reactDom);
 
-var _PeopleList = __webpack_require__(/*! PeopleList */ "./src/PeopleList.js");
+var _FetchComponent = __webpack_require__(/*! FetchComponent */ "./src/FetchComponent.js");
 
-var _PeopleList2 = _interopRequireDefault(_PeopleList);
-
-var _CountryNames = __webpack_require__(/*! CountryNames */ "./src/CountryNames.js");
-
-var _CountryNames2 = _interopRequireDefault(_CountryNames);
+var _Expandable = __webpack_require__(/*! Expandable */ "./src/Expandable.js");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 _reactDom2.default.render(_react2.default.createElement(
     'div',
     null,
-    _react2.default.createElement(_PeopleList2.default, null),
-    _react2.default.createElement(_CountryNames2.default, { selected: 'United States' })
+    _react2.default.createElement(_FetchComponent.PeopleList, null),
+    _react2.default.createElement(_FetchComponent.CountryNames, { selected: 'United States' }),
+    _react2.default.createElement(
+        _Expandable.HiddenMessage,
+        null,
+        ' Hello World! '
+    ),
+    _react2.default.createElement(
+        _Expandable.MenuButton,
+        { hidden: true, txt: 'toggle popup' },
+        _react2.default.createElement(
+            'h1',
+            null,
+            'Hidden Content'
+        ),
+        _react2.default.createElement(
+            'p',
+            null,
+            'This content will start off hidden'
+        )
+    )
 ), document.getElementById("react-container"));
 
 /***/ })
