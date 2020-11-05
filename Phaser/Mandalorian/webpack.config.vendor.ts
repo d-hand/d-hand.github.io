@@ -8,7 +8,7 @@ import {buildDir} from "./webpack.config";
 export default (env: any): Configuration => {
     return {
         entry: {
-            Vendor: [
+            vendor2: [
                 "phaser",
             ]
         },
