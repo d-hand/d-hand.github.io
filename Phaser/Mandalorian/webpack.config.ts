@@ -6,11 +6,13 @@ export const buildDir = path.resolve(__dirname, "dist", "build");
 
 export default (env: any): Configuration => {
     return {
-        entry: './src/game.ts',
+        entry: './src/Game.ts',
         devtool: 'inline-source-map',
+        // stats: "errors-only",
         stats: {
             modules: false,
-            warnings: false            
+            warnings: false,
+            children: false            
         },
         module: {
             rules: [

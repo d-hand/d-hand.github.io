@@ -14,15 +14,15 @@ export class Bullet extends Phaser.GameObjects.Image {
         this.speed = Phaser.Math.GetSpeed(600, 1);
     }
 
-    fire (x, y)
+    fire (fromX: number, fromY: number, toX: number, toY:number)
     {
         this.setActive(true);
         this.setVisible(true);
 
         //  Bullets fire from the middle of the screen to the given x/y
-        this.setPosition(400, 300);
+        this.setPosition(fromX, fromY);
 
-        var angle = Phaser.Math.Angle.Between(x, y, 400, 300);
+        var angle = Phaser.Math.Angle.Between(toX, toY, fromX, fromY);
 
         this.setRotation(angle);
 
@@ -32,7 +32,7 @@ export class Bullet extends Phaser.GameObjects.Image {
         this.lifespan = 1000;
     }
 
-    update(time, delta)
+    update(time: any, delta: any)
     {
         this.lifespan -= delta;
 
