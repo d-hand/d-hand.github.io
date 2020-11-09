@@ -8,7 +8,6 @@ export default (env: any): Configuration => {
     return {
         entry: './src/Game.ts',
         devtool: 'inline-source-map',
-        // stats: "errors-only",
         stats: {
             modules: false,
             warnings: false,

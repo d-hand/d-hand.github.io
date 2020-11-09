@@ -1,34 +1,26 @@
-import {Bullet} from './Bullet';
+import { timeStamp } from 'console';
+import {Rocket} from './Rocket';
 import { Mandalorian } from './Mandalorian';
+import { MandalorianWeapons } from './MandalorianWeapons';
 
-export default class Scene extends Phaser.Scene {
+export class Scene extends Phaser.Scene  {
     mandalorian: Mandalorian;
 
     constructor() {
-        super('MandalorianScene');
+        super('mandalorianScene');
     }
 
     preload() {
-        this.load.image('mandalorian', 'assets/mandalorian.png');
-        this.load.image('bullets', 'assets/bullets.png');
+        Mandalorian.load(this);
     }
 
     create() {
-
         this.mandalorian = new Mandalorian(this);
 
-        this.input.on('pointerdown', (pointer) => {
-        });
-
-        this.input.on('pointermove', (pointer) => {
-        });
-
-        this.input.on('pointerup', (pointer) => {
-        });
+        this.mandalorian.addToScene(this);
     }
 
-
-    update(time: any, delta: any) {
+    update(time: number, delta: number) {        
         this.mandalorian.update(time, delta);
     }
 }

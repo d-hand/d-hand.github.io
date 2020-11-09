@@ -1,35 +1,34 @@
 import { GameObjects } from "phaser";
-import { Bullet } from "./Bullet";
+import { MandalorianWeapons } from "./MandalorianWeapons";
+import { Scene } from "./Scene";
 
 export class Mandalorian extends Phaser.GameObjects.Sprite {
-    bullets: GameObjects.Group;
-    isFire: boolean;
-    isForward: boolean;
+    weapons: MandalorianWeapons;
+
+    isAttack: boolean;    
+
     mouseX = 0;
     mouseY = 0;
-    lastFired = 0;
-    step = 2;
+    
     keyW: Phaser.Input.Keyboard.Key;
     keyA: Phaser.Input.Keyboard.Key;
     keyS: Phaser.Input.Keyboard.Key;
     keyD: Phaser.Input.Keyboard.Key;
 
-    
-    constructor(scene: Phaser.Scene) {
-        super(scene, 400, 300, 'mandalorian');
-        this.setDepth(1);        
-        scene.add.existing(this);
+    speed = Phaser.Math.GetSpeed(100, 1);    
 
-        this.bullets = scene.add.group({
-            classType: Bullet,
-            maxSize: 50,
-            runChildUpdate: true
-        });
+    constructor(scene: Scene) {
+        super(scene, 400, 300, 'mandalorian');
+        this.setDepth(1);
+
+        this.weapons = new MandalorianWeapons(scene);        
 
         scene.input.on('pointerdown', (pointer: any) => {
-            this.isFire = true;
-            this.mouseX = pointer.x;
-            this.mouseX = pointer.y;
+            this.isAttack = true;
+        });
+
+        scene.input.on('pointerup', () => {
+            this.isAttack = false;
         });
 
         scene.input.on('pointermove', (pointer: any) => {
@@ -37,43 +36,29 @@ export class Mandalorian extends Phaser.GameObjects.Sprite {
             this.mouseY = pointer.y;
         });
 
-        scene.input.on('pointerup', () => {
-            this.isFire = false;
-        });
-
-        this.keyW = scene.input.keyboard.addKey('W'); 
-        this.keyA = scene.input.keyboard.addKey('A'); 
-        this.keyS = scene.input.keyboard.addKey('S'); 
-        this.keyD = scene.input.keyboard.addKey('D'); 
+        this.keyW = scene.input.keyboard.addKey('W');
+        this.keyA = scene.input.keyboard.addKey('A');
+        this.keyS = scene.input.keyboard.addKey('S');
+        this.keyD = scene.input.keyboard.addKey('D');
     }
 
-    update(time, delta) {
-        
-        if (this.isFire && time > this.lastFired) {
-            var bullet = this.bullets.get() as Bullet;
+    public static load(scene: Scene) {
+        scene.load.image('mandalorian', 'assets/mandalorian.png');
+        MandalorianWeapons.load(scene);
+    }
 
-            if (bullet) {
-                bullet.fire(this.x, this.y, this.mouseX, this.mouseY);
+    public addToScene(scene: Scene) {
+        scene.add.existing(this);
+        this.weapons.addToScene(scene);
+    }
 
-                this.lastFired = time + 50;
-            }
+    public update(time: number, delta: number) {
+        if (this.isAttack) {
+            this.weapons.activate(time, this.x, this.y, this.mouseX, this.mouseY);
         }
 
-        let x = this.x;
-        let y = this.y;
-        if (this.keyW.isDown) {
-            y -= this.step;
-        }
-        if (this.keyS.isDown) {
-            y += this.step;
-        }
-        if (this.keyD.isDown) {
-            x += this.step;
-        }
-        if (this.keyA.isDown) {
-            x -= this.step;
-        }
-        this.setPosition(x, y);
+        this.x += delta * this.speed * (Number(this.keyD.isDown) - Number(this.keyA.isDown));
+        this.y += delta * this.speed * (Number(this.keyS.isDown) - Number(this.keyW.isDown));
 
         this.setRotation(Phaser.Math.Angle.Between(this.mouseX, this.mouseY, this.x, this.y) - Math.PI / 2);
     }
