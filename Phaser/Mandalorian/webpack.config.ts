@@ -33,7 +33,7 @@ export default (env: any): Configuration => {
             // new BundleAnalyzerPlugin()
         ],
         output: {
-            filename: 'game.js',
+            filename: 'game.bundle.js',
             path: buildDir ,
         },
     }
