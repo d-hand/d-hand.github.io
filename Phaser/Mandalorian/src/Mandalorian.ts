@@ -34,6 +34,7 @@ export class Mandalorian extends Phaser.GameObjects.Sprite {
         scene.input.on('pointermove', (pointer: any) => {
             this.mouseX = pointer.x;
             this.mouseY = pointer.y;
+            // console.log(this.mouseX, this.mouseY);
         });
 
         this.keyW = scene.input.keyboard.addKey('W');
