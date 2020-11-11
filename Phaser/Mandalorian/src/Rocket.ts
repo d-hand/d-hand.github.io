@@ -1,6 +1,10 @@
 import { Scene } from "./Scene";
 
 export class Rocket extends Phaser.GameObjects.Image {
+    static readonly rocketImage = 'rocket';
+    static readonly boomImage = 'boom';
+    static readonly explodeKey = 'explode'
+
     incX: number;
     incY: number;
     lifespan: number;
@@ -8,7 +12,7 @@ export class Rocket extends Phaser.GameObjects.Image {
     boomSprite: Phaser.GameObjects.Sprite;
 
     constructor(scene: Scene) {
-        super(scene, 0, 0, 'rocket');
+        super(scene, 0, 0, Rocket.rocketImage);
 
         this.displayHeight = 7;
         this.displayWidth = 15;
@@ -17,20 +21,23 @@ export class Rocket extends Phaser.GameObjects.Image {
         this.lifespan = 0;
         this.speed = Phaser.Math.GetSpeed(400, 1);
 
-        scene.anims.create({
-            key: 'explode',
-            frames: scene.anims.generateFrameNames('boom'),
-            hideOnComplete: true
-        });
     }
 
     static load(scene: Scene) {
         scene.load.image({
-            key: 'rocket',
-            url: 'assets/rockets.png',
+            key: Rocket.rocketImage,
+            url: 'assets/rocket.png',
         });
 
-        scene.load.spritesheet('boom', 'assets/explosion.png', { frameWidth: 64, frameHeight: 64, endFrame: 23 });
+        scene.load.spritesheet(Rocket.boomImage, 'assets/rocket-explosion.png', { frameWidth: 64, frameHeight: 64, endFrame: 23 });
+    }
+
+    static addToScene({scene}: {scene: Scene}) {
+        scene.anims.create({
+            key: Rocket.explodeKey,
+            frames: scene.anims.generateFrameNames(Rocket.boomImage),
+            hideOnComplete: true
+        });
     }
 
     activate(x1: number, y1: number, x2: number, y2: number) {
@@ -59,10 +66,13 @@ export class Rocket extends Phaser.GameObjects.Image {
             this.setActive(false);
             this.setVisible(false);
             
-            debugger;
-            console.log(this)
-            this.scene.add.sprite(this.x, this.y, 'boom').play('explode');
+            const explosionSprite = this.scene.add.sprite(this.x, this.y, Rocket.boomImage);
+            explosionSprite.play(Rocket.explodeKey);
+            explosionSprite.once(Phaser.Animations.Events.SPRITE_ANIMATION_COMPLETE, () => explosionSprite.destroy());
+            
             this.destroy();
+
+            console.log('destroy');
         }
     }
 }

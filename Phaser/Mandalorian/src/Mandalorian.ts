@@ -1,37 +1,46 @@
-import { GameObjects } from "phaser";
 import { MandalorianWeapons } from "./MandalorianWeapons";
 import { Scene } from "./Scene";
 
-export class Mandalorian extends Phaser.GameObjects.Sprite {
+interface IProps {
+    scene: Scene;
+    weapons: MandalorianWeapons;
+}
+
+interface ICtorProps extends IProps {    
+    sprite: Phaser.GameObjects.Sprite;    
+}
+
+export class Mandalorian {
+    static readonly spriteName = 'mandalorianSprite'
+
+    sprite: Phaser.GameObjects.Sprite;
     weapons: MandalorianWeapons;
 
-    isAttack: boolean;    
+    isAttack: boolean;
 
     mouseX = 0;
     mouseY = 0;
-    
+
     keyW: Phaser.Input.Keyboard.Key;
     keyA: Phaser.Input.Keyboard.Key;
     keyS: Phaser.Input.Keyboard.Key;
     keyD: Phaser.Input.Keyboard.Key;
 
-    speed = Phaser.Math.GetSpeed(100, 1);    
+    speed = Phaser.Math.GetSpeed(100, 1);
 
-    constructor(scene: Scene) {
-        super(scene, 400, 300, 'mandalorian');
-        this.setDepth(1);
-
-        this.weapons = new MandalorianWeapons(scene);        
-
-        scene.input.on('pointerdown', (pointer: any) => {
+    private constructor({scene, sprite, weapons} : ICtorProps) {
+        this.sprite = sprite;
+        this.weapons = weapons;
+        
+        scene.input.on(Phaser.Input.Events.POINTER_DOWN, (pointer: any) => {
             this.isAttack = true;
         });
 
-        scene.input.on('pointerup', () => {
+        scene.input.on(Phaser.Input.Events.POINTER_UP, () => {
             this.isAttack = false;
         });
 
-        scene.input.on('pointermove', (pointer: any) => {
+        scene.input.on(Phaser.Input.Events.POINTER_MOVE, (pointer: any) => {
             this.mouseX = pointer.x;
             this.mouseY = pointer.y;
             // console.log(this.mouseX, this.mouseY);
@@ -44,23 +53,22 @@ export class Mandalorian extends Phaser.GameObjects.Sprite {
     }
 
     public static load(scene: Scene) {
-        scene.load.image('mandalorian', 'assets/mandalorian.png');
-        MandalorianWeapons.load(scene);
+        scene.load.image(Mandalorian.spriteName, 'assets/mandalorian.png');
     }
 
-    public addToScene(scene: Scene) {
-        scene.add.existing(this);
-        this.weapons.addToScene(scene);
+    public static addToScene(props: IProps) : Mandalorian {        
+        const sprite = props.scene.add.sprite(400, 300, Mandalorian.spriteName).setDepth(1);
+        return new Mandalorian({...props, sprite});
     }
 
     public update(time: number, delta: number) {
         if (this.isAttack) {
-            this.weapons.activate(time, this.x, this.y, this.mouseX, this.mouseY);
+            this.weapons.activate(time, this.sprite.x, this.sprite.y, this.mouseX, this.mouseY);
         }
 
-        this.x += delta * this.speed * (Number(this.keyD.isDown) - Number(this.keyA.isDown));
-        this.y += delta * this.speed * (Number(this.keyS.isDown) - Number(this.keyW.isDown));
+        this.sprite.x += delta * this.speed * (Number(this.keyD.isDown) - Number(this.keyA.isDown));
+        this.sprite.y += delta * this.speed * (Number(this.keyS.isDown) - Number(this.keyW.isDown));
 
-        this.setRotation(Phaser.Math.Angle.Between(this.mouseX, this.mouseY, this.x, this.y) - Math.PI / 2);
+        this.sprite.setRotation(Phaser.Math.Angle.Between(this.mouseX, this.mouseY, this.sprite.x, this.sprite.y) - Math.PI / 2);
     }
 }
