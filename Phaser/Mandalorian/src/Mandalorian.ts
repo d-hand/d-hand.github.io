@@ -1,18 +1,7 @@
 import { MandalorianWeapons } from "./MandalorianWeapons";
 import { Scene } from "./Scene";
 
-interface IProps {
-    scene: Scene;
-    weapons: MandalorianWeapons;
-}
-
-interface ICtorProps extends IProps {    
-    sprite: Phaser.GameObjects.Sprite;    
-}
-
 export class Mandalorian {
-    static readonly spriteName = 'mandalorianSprite'
-
     sprite: Phaser.GameObjects.Sprite;
     weapons: MandalorianWeapons;
 
@@ -28,9 +17,9 @@ export class Mandalorian {
 
     speed = Phaser.Math.GetSpeed(100, 1);
 
-    private constructor({scene, sprite, weapons} : ICtorProps) {
-        this.sprite = sprite;
-        this.weapons = weapons;
+    constructor(scene: Scene) {
+        this.sprite = scene.mandalorianSprite;
+        this.weapons = scene.mandalorianWeapons;
         
         scene.input.on(Phaser.Input.Events.POINTER_DOWN, (pointer: any) => {
             this.isAttack = true;
@@ -52,16 +41,7 @@ export class Mandalorian {
         this.keyD = scene.input.keyboard.addKey('D');
     }
 
-    public static load(scene: Scene) {
-        scene.load.image(Mandalorian.spriteName, 'assets/mandalorian.png');
-    }
-
-    public static addToScene(props: IProps) : Mandalorian {        
-        const sprite = props.scene.add.sprite(400, 300, Mandalorian.spriteName).setDepth(1);
-        return new Mandalorian({...props, sprite});
-    }
-
-    public update(time: number, delta: number) {
+    update(time: number, delta: number) {
         if (this.isAttack) {
             this.weapons.activate(time, this.sprite.x, this.sprite.y, this.mouseX, this.mouseY);
         }
@@ -70,5 +50,17 @@ export class Mandalorian {
         this.sprite.y += delta * this.speed * (Number(this.keyS.isDown) - Number(this.keyW.isDown));
 
         this.sprite.setRotation(Phaser.Math.Angle.Between(this.mouseX, this.mouseY, this.sprite.x, this.sprite.y) - Math.PI / 2);
+    }
+}
+
+export class MandalorianFactory {
+    static readonly mandalorianSprite = 'mandalorianSprite'
+
+    static load(scene: Scene) {
+        scene.load.image(MandalorianFactory.mandalorianSprite, 'assets/mandalorian.png');
+    }
+
+    static addMandalorianSpriteToScene(scene: Scene)  {
+        return scene.add.sprite(400, 300, MandalorianFactory.mandalorianSprite).setDepth(1);
     }
 }

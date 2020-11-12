@@ -1,10 +1,6 @@
 import { Scene } from "./Scene";
 
 export class Rocket extends Phaser.GameObjects.Image {
-    static readonly rocketImage = 'rocket';
-    static readonly boomImage = 'boom';
-    static readonly explodeKey = 'explode'
-
     incX: number;
     incY: number;
     lifespan: number;
@@ -12,7 +8,7 @@ export class Rocket extends Phaser.GameObjects.Image {
     boomSprite: Phaser.GameObjects.Sprite;
 
     constructor(scene: Scene) {
-        super(scene, 0, 0, Rocket.rocketImage);
+        super(scene, 0, 0, RocketFactory.rocketImage);
 
         this.displayHeight = 7;
         this.displayWidth = 15;
@@ -21,23 +17,6 @@ export class Rocket extends Phaser.GameObjects.Image {
         this.lifespan = 0;
         this.speed = Phaser.Math.GetSpeed(400, 1);
 
-    }
-
-    static load(scene: Scene) {
-        scene.load.image({
-            key: Rocket.rocketImage,
-            url: 'assets/rocket.png',
-        });
-
-        scene.load.spritesheet(Rocket.boomImage, 'assets/rocket-explosion.png', { frameWidth: 64, frameHeight: 64, endFrame: 23 });
-    }
-
-    static addToScene({scene}: {scene: Scene}) {
-        scene.anims.create({
-            key: Rocket.explodeKey,
-            frames: scene.anims.generateFrameNames(Rocket.boomImage),
-            hideOnComplete: true
-        });
     }
 
     activate(x1: number, y1: number, x2: number, y2: number) {
@@ -66,13 +45,41 @@ export class Rocket extends Phaser.GameObjects.Image {
             this.setActive(false);
             this.setVisible(false);
             
-            const explosionSprite = this.scene.add.sprite(this.x, this.y, Rocket.boomImage);
-            explosionSprite.play(Rocket.explodeKey);
+            const explosionSprite = this.scene.add.sprite(this.x, this.y, RocketFactory.boomImage);
+            explosionSprite.play(RocketFactory.explodeKey);
             explosionSprite.once(Phaser.Animations.Events.SPRITE_ANIMATION_COMPLETE, () => explosionSprite.destroy());
             
             this.destroy();
 
             console.log('destroy');
         }
+    }
+}
+
+export class RocketFactory {
+    static readonly rocketImage = 'rocket';
+    static readonly boomImage = 'boom';
+    static readonly explodeKey = 'explode'
+
+    static load(scene: Scene) {
+        scene.load.image({
+            key: RocketFactory.rocketImage,
+            url: 'assets/rocket.png',
+        });
+
+        scene.load.spritesheet(RocketFactory.boomImage, 'assets/rocket-explosion.png', { frameWidth: 64, frameHeight: 64, endFrame: 23 });
+    }
+
+    static addAnimationToScene(scene: Scene) {
+        var result = scene.anims.create({
+            key: RocketFactory.explodeKey,
+            frames: scene.anims.generateFrameNames(RocketFactory.boomImage),
+            hideOnComplete: true
+        });
+
+        if (result === false)
+            throw new Error();
+
+        return result;
     }
 }

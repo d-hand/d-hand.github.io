@@ -5,20 +5,11 @@ export class RocketGun {
     rocketGroup: Phaser.GameObjects.Group;
     lastRocketFired = 0;
 
-    private constructor({ scene, rocketGroup }: { scene: Scene, rocketGroup: Phaser.GameObjects.Group }) {
-        this.rocketGroup = rocketGroup;        
+    constructor(scene: Scene) {
+        this.rocketGroup = scene.rocketGroup;
     }
 
-    public static addToScene({ scene }: { scene: Scene }): RocketGun {
-        const rocketGroup = scene.add.group({
-            classType: Rocket,
-            maxSize: 20,
-            runChildUpdate: true
-        });
-        return new RocketGun({ scene, rocketGroup });
-    }
-
-    public activate(time: number, x1: number, y1: number, x2: number, y2: number) {
+    activate(time: number, x1: number, y1: number, x2: number, y2: number) {
         if (time > this.lastRocketFired) {
             var rocket = this.rocketGroup.get() as Rocket;
 
@@ -28,5 +19,15 @@ export class RocketGun {
                 this.lastRocketFired = time + 600;
             }
         }
+    }
+}
+
+export class RocketGunFactory {
+    static addRocketGroupToScene(scene: Scene) {
+        return scene.add.group({
+            classType: Rocket,
+            maxSize: 20,
+            runChildUpdate: true
+        });
     }
 }
