@@ -2,13 +2,7 @@ import { MandalorianWeapons } from "./MandalorianWeapons";
 import { Scene } from "./Scene";
 
 export class Mandalorian {
-    sprite: Phaser.GameObjects.Sprite;
-    weapons: MandalorianWeapons;
-
-    isAttack: boolean;
-
-    mouseX = 0;
-    mouseY = 0;
+    scene: Scene;    
 
     keyW: Phaser.Input.Keyboard.Key;
     keyA: Phaser.Input.Keyboard.Key;
@@ -18,22 +12,7 @@ export class Mandalorian {
     speed = Phaser.Math.GetSpeed(100, 1);
 
     constructor(scene: Scene) {
-        this.sprite = scene.mandalorianSprite;
-        this.weapons = scene.mandalorianWeapons;
-        
-        scene.input.on(Phaser.Input.Events.POINTER_DOWN, (pointer: any) => {
-            this.isAttack = true;
-        });
-
-        scene.input.on(Phaser.Input.Events.POINTER_UP, () => {
-            this.isAttack = false;
-        });
-
-        scene.input.on(Phaser.Input.Events.POINTER_MOVE, (pointer: any) => {
-            this.mouseX = pointer.x;
-            this.mouseY = pointer.y;
-            // console.log(this.mouseX, this.mouseY);
-        });
+        this.scene = scene;
 
         this.keyW = scene.input.keyboard.addKey('W');
         this.keyA = scene.input.keyboard.addKey('A');
@@ -42,14 +21,12 @@ export class Mandalorian {
     }
 
     update(time: number, delta: number) {
-        if (this.isAttack) {
-            this.weapons.activate(time, this.sprite.x, this.sprite.y, this.mouseX, this.mouseY);
-        }
+        const sprite = this.scene.mandalorianSprite;
 
-        this.sprite.x += delta * this.speed * (Number(this.keyD.isDown) - Number(this.keyA.isDown));
-        this.sprite.y += delta * this.speed * (Number(this.keyS.isDown) - Number(this.keyW.isDown));
+        sprite.x += delta * this.speed * (Number(this.keyD.isDown) - Number(this.keyA.isDown));
+        sprite.y += delta * this.speed * (Number(this.keyS.isDown) - Number(this.keyW.isDown));
 
-        this.sprite.setRotation(Phaser.Math.Angle.Between(this.mouseX, this.mouseY, this.sprite.x, this.sprite.y) - Math.PI / 2);
+        sprite.setRotation(Phaser.Math.Angle.Between(this.scene.mouseX, this.scene.mouseY, sprite.x, sprite.y) - Math.PI / 2);
     }
 }
 

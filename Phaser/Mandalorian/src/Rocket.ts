@@ -32,7 +32,7 @@ export class Rocket extends Phaser.GameObjects.Image {
         this.incX = Math.cos(angle);
         this.incY = Math.sin(angle);
 
-        this.lifespan = 600;
+        this.lifespan = 800;
     }
 
     update(time: number, delta: number) {
@@ -45,7 +45,7 @@ export class Rocket extends Phaser.GameObjects.Image {
             this.setActive(false);
             this.setVisible(false);
             
-            const explosionSprite = this.scene.add.sprite(this.x, this.y, RocketFactory.boomImage);
+            const explosionSprite = this.scene.add.sprite(this.x, this.y, RocketFactory.boomImage);            
             explosionSprite.play(RocketFactory.explodeKey);
             explosionSprite.once(Phaser.Animations.Events.SPRITE_ANIMATION_COMPLETE, () => explosionSprite.destroy());
             
@@ -74,7 +74,7 @@ export class RocketFactory {
         var result = scene.anims.create({
             key: RocketFactory.explodeKey,
             frames: scene.anims.generateFrameNames(RocketFactory.boomImage),
-            hideOnComplete: true
+            hideOnComplete: true,
         });
 
         if (result === false)
@@ -83,3 +83,4 @@ export class RocketFactory {
         return result;
     }
 }
+

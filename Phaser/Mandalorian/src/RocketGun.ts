@@ -2,21 +2,21 @@ import { Rocket } from "./Rocket";
 import { Scene } from "./Scene";
 
 export class RocketGun {
-    rocketGroup: Phaser.GameObjects.Group;
-    lastRocketFired = 0;
+    scene: Scene;
+    lastFired = 0;    
 
     constructor(scene: Scene) {
-        this.rocketGroup = scene.rocketGroup;
+        this.scene = scene;
     }
 
     activate(time: number, x1: number, y1: number, x2: number, y2: number) {
-        if (time > this.lastRocketFired) {
-            var rocket = this.rocketGroup.get() as Rocket;
+        if (time > this.lastFired) {
+            var rocket = this.scene.rocketGroup.get() as Rocket;
 
             if (rocket) {
                 rocket.activate(x1, y1, x2, y2);
 
-                this.lastRocketFired = time + 600;
+                this.lastFired = time + 600;
             }
         }
     }
