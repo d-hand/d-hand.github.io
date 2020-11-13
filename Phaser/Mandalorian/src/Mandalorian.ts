@@ -4,27 +4,31 @@ import { Scene } from "./Scene";
 export class Mandalorian {
     scene: Scene;    
 
-    keyW: Phaser.Input.Keyboard.Key;
-    keyA: Phaser.Input.Keyboard.Key;
-    keyS: Phaser.Input.Keyboard.Key;
-    keyD: Phaser.Input.Keyboard.Key;
+    up: Phaser.Input.Keyboard.Key;
+    left: Phaser.Input.Keyboard.Key;
+    bottom: Phaser.Input.Keyboard.Key;
+    right: Phaser.Input.Keyboard.Key;
 
     speed = Phaser.Math.GetSpeed(100, 1);
 
     constructor(scene: Scene) {
         this.scene = scene;
 
-        this.keyW = scene.input.keyboard.addKey('W');
-        this.keyA = scene.input.keyboard.addKey('A');
-        this.keyS = scene.input.keyboard.addKey('S');
-        this.keyD = scene.input.keyboard.addKey('D');
+        // this.up = scene.input.keyboard.addKey('E');
+        // this.left = scene.input.keyboard.addKey('S');
+        // this.bottom = scene.input.keyboard.addKey('D');
+        // this.right = scene.input.keyboard.addKey('F');
+        this.up = scene.input.keyboard.addKey('up');
+        this.left = scene.input.keyboard.addKey('left');
+        this.bottom = scene.input.keyboard.addKey('down');
+        this.right = scene.input.keyboard.addKey('right');
     }
 
     update(time: number, delta: number) {
         const sprite = this.scene.mandalorianSprite;
 
-        sprite.x += delta * this.speed * (Number(this.keyD.isDown) - Number(this.keyA.isDown));
-        sprite.y += delta * this.speed * (Number(this.keyS.isDown) - Number(this.keyW.isDown));
+        sprite.x += delta * this.speed * (Number(this.right.isDown) - Number(this.left.isDown));
+        sprite.y += delta * this.speed * (Number(this.bottom.isDown) - Number(this.up.isDown));
 
         sprite.setRotation(Phaser.Math.Angle.Between(this.scene.mouseX, this.scene.mouseY, sprite.x, sprite.y) - Math.PI / 2);
     }

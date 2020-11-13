@@ -9,7 +9,7 @@ export class Scene extends Phaser.Scene {
     rocketGun: RocketGun;
     rocketGroup: Phaser.GameObjects.Group;
 
-    pistolAnimation: Phaser.Animations.Animation;
+    pistolAnimations: Phaser.Animations.Animation[];
     pistol: Pistol;
 
     mandalorianWeapons: MandalorianWeapons;
@@ -30,7 +30,7 @@ export class Scene extends Phaser.Scene {
         this.rocketAnimation = RocketFactory.addAnimationToScene(this);
         this.rocketGroup = RocketGunFactory.addRocketGroupToScene(this);
         this.rocketGun = new RocketGun(this);
-        this.pistolAnimation = PistolFactory.addAnimationToScene(this);
+        this.pistolAnimations = PistolFactory.addAnimationsToScene(this);
         this.pistol = new Pistol(this);
         this.mandalorianWeapons = new MandalorianWeapons(this);
         this.mandalorianSprite = MandalorianFactory.addMandalorianSpriteToScene(this);

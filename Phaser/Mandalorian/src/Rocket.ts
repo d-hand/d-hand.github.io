@@ -3,7 +3,10 @@ import { Scene } from "./Scene";
 export class Rocket extends Phaser.GameObjects.Image {
     incX: number;
     incY: number;
-    lifespan: number;
+    x1: number;
+    y1: number;
+    x2: number;
+    y2: number;
     speed: number;
     boomSprite: Phaser.GameObjects.Sprite;
 
@@ -14,12 +17,16 @@ export class Rocket extends Phaser.GameObjects.Image {
         this.displayWidth = 15;
         this.incX = 0;
         this.incY = 0;
-        this.lifespan = 0;
         this.speed = Phaser.Math.GetSpeed(400, 1);
 
     }
 
     activate(x1: number, y1: number, x2: number, y2: number) {
+        this.x1 = x1;
+        this.y1 = y1;
+        this.x2 = x2;
+        this.y2 = y2;
+
         this.setActive(true);
         this.setVisible(true);
 
@@ -31,21 +38,20 @@ export class Rocket extends Phaser.GameObjects.Image {
 
         this.incX = Math.cos(angle);
         this.incY = Math.sin(angle);
-
-        this.lifespan = 800;
     }
 
     update(time: number, delta: number) {
-        this.lifespan -= delta;
 
         this.x -= this.incX * (this.speed * delta);
         this.y -= this.incY * (this.speed * delta);
 
-        if (this.lifespan <= 0) {
+        if (Math.abs(this.x2 - this.x1) - Math.abs(this.x - this.x1) < 0 ||
+            Math.abs(this.y2 - this.y1) - Math.abs(this.y - this.y1) < 0) {
             this.setActive(false);
             this.setVisible(false);
             
             const explosionSprite = this.scene.add.sprite(this.x, this.y, RocketFactory.boomImage);            
+            explosionSprite.setScale(10)
             explosionSprite.play(RocketFactory.explodeKey);
             explosionSprite.once(Phaser.Animations.Events.SPRITE_ANIMATION_COMPLETE, () => explosionSprite.destroy());
             
