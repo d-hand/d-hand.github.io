@@ -5,32 +5,40 @@ import { Scene } from "./Scene";
 interface IParams {
     rocketGun: Phaser.GameObjects.Sprite;
     rocketGroup: Phaser.GameObjects.Group;
+    mouse: Phaser.Input.Pointer;
 }
 
 export class RocketGun implements IMandalorianWeapon {
     static tempMatrix = new Phaser.GameObjects.Components.TransformMatrix();
 
+    mouse: Phaser.Input.Pointer;
     rocketGun: Phaser.GameObjects.Sprite;
     rocketGroup: Phaser.GameObjects.Group;
     lastFired = 0;
+    isFire = false;
+    isActive = false;
 
-    constructor({rocketGun, rocketGroup} : IParams) {
+    constructor({rocketGun, rocketGroup, mouse} : IParams) {
         this.rocketGun = rocketGun;
         this.rocketGroup = rocketGroup;
+        this.mouse = mouse;
     }
 
-    setActivate(activated: boolean) {
-        this.rocketGun.setVisible(activated);
+    activate = (isActive: boolean) => {
+        this.isActive = isActive;
+        this.rocketGun.setVisible(isActive);
     }
 
-    fire(time: number, delta: number, x: number, y: number) {
-        if (time > this.lastFired) {
+    fire = (isFire: boolean) => this.isFire = isFire;
+
+    update(time: number, delta: number) {
+        if (this.isActive && this.isFire && time > this.lastFired) {
             var rocket = this.rocketGroup.get() as Rocket;
 
             if (rocket) {
-                const [x0, y0] = this.getAbsolutePosition();
+                const [x, y] = this.getAbsolutePosition();
                 
-                rocket.activate(x0, y0, x, y);
+                rocket.activate(x, y, this.mouse.x, this.mouse.y);
 
                 this.lastFired = time + 600;
             }
@@ -55,6 +63,8 @@ export class RocketGunFactory {
     }
 
     static create(scene: Scene, container: Phaser.GameObjects.Container) {
+        const mouse = scene.input.mousePointer;
+
         const rocketGroup = scene.add.group({
             classType: Rocket,
             maxSize: 20,
@@ -65,6 +75,6 @@ export class RocketGunFactory {
         container.add(rocketGun);
 
 
-        return new RocketGun({rocketGun, rocketGroup});
+        return new RocketGun({rocketGun, rocketGroup, mouse});
     }
 }

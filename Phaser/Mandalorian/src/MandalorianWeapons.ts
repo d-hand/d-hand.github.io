@@ -1,13 +1,11 @@
 import { Pistol, PistolFactory } from "./Pistol";
-import { RocketFactory } from "./Rocket";
 import { RocketGun, RocketGunFactory } from "./RocketGun";
 import { Scene } from "./Scene";
 
 interface IParams {
     pistol: Pistol;
     rocketGun: RocketGun;
-    input: Phaser.Input.InputPlugin;
-    mouse: Phaser.Input.Pointer;
+    input: Phaser.Input.InputPlugin;    
 }
 
 export class MandalorianWeapons {
@@ -16,28 +14,31 @@ export class MandalorianWeapons {
     isAttack: boolean;
     mouse: Phaser.Input.Pointer;
 
-    constructor({pistol, rocketGun, input, mouse} : IParams) {
-        this.weapons = [pistol, rocketGun];
-        this.mouse = mouse;        
+    constructor({pistol, rocketGun, input} : IParams) {
+        this.weapons = [pistol, rocketGun];    
 
         input.keyboard.addKey('W').on(Phaser.Input.Keyboard.Events.DOWN, this.switchWeapons);
         input.keyboard.addKey('CTRL').on(Phaser.Input.Keyboard.Events.DOWN, this.switchWeapons);
+        input.on(Phaser.Input.Events.POINTER_DOWN, () => this.fire(true));
+        input.on(Phaser.Input.Events.POINTER_UP, () => this.fire(false));
 
-        this.getWeapon().setActivate(true);
+        this.getWeapon().activate(true);
     }
 
     update(time: number, delta: number) {
-        if (this.mouse.isDown) {
-            this.getWeapon().fire(time, delta, this.mouse.x, this.mouse.y);
-        }
+        this.weapons.forEach(w => w.update(time, delta));
+    }
+
+    fire(isFire) {
+        this.getWeapon().fire(isFire);
     }
 
     getWeapon = () => this.weapons[this.activeIndex];
 
     switchWeapons = () => {
-        this.getWeapon().setActivate(false);
+        this.getWeapon().activate(false);
         this.switchIndex();
-        this.getWeapon().setActivate(true);
+        this.getWeapon().activate(true);
     }
 
     switchIndex() {
@@ -49,14 +50,15 @@ export class MandalorianWeapons {
 export class MandalorianWeaponFactory {
     static create(scene: Scene, container: Phaser.GameObjects.Container) {
         const input = scene.input;
-        const mouse = scene.input.mousePointer;
+        
         const pistol = PistolFactory.create(scene, container);
         const rocketGun = RocketGunFactory.create(scene, container);        
-        return new MandalorianWeapons({pistol, rocketGun, input, mouse});
+        return new MandalorianWeapons({pistol, rocketGun, input});
     }
 }
 
 export interface IMandalorianWeapon {
-    setActivate(activated: boolean): void;
-    fire(time: number, delta: number, x: number, y: number): void;
+    activate(isActivate: boolean): void;
+    fire(isFire): void;
+    update(time: number, delta: number): void;
 }
