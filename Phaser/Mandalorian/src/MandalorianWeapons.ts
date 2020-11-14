@@ -12,42 +12,38 @@ interface IParams {
 
 export class MandalorianWeapons {
     weapons: IMandalorianWeapon[];
-    activated = 0;
+    activeIndex = 0;
     isAttack: boolean;
     mouse: Phaser.Input.Pointer;
 
     constructor({pistol, rocketGun, input, mouse} : IParams) {
         this.weapons = [pistol, rocketGun];
-        this.mouse = mouse;
+        this.mouse = mouse;        
+
+        input.keyboard.addKey('W').on(Phaser.Input.Keyboard.Events.DOWN, this.switchWeapons);
+        input.keyboard.addKey('CTRL').on(Phaser.Input.Keyboard.Events.DOWN, this.switchWeapons);
 
         this.getWeapon().setActivate(true);
-
-        input.on(Phaser.Input.Events.POINTER_DOWN, () => {
-            this.isAttack = true;
-        });
-
-        input.on(Phaser.Input.Events.POINTER_UP, () => {
-            this.isAttack = false;
-        });
-
-        input.keyboard.addKey('W').on(Phaser.Input.Keyboard.Events.DOWN, () => {
-            this.getWeapon().setActivate(false);
-
-            if (++this.activated >= this.weapons.length) 
-                this.activated = 0;
-
-            this.getWeapon().setActivate(true);
-        });        
-
     }
 
     update(time: number, delta: number) {
-        if (this.isAttack) {
-            this.getWeapon().fire(time, delta, this.mouse.x, this.mouse.y)
+        if (this.mouse.isDown) {
+            this.getWeapon().fire(time, delta, this.mouse.x, this.mouse.y);
         }
     }
 
-    getWeapon = () => this.weapons[this.activated];
+    getWeapon = () => this.weapons[this.activeIndex];
+
+    switchWeapons = () => {
+        this.getWeapon().setActivate(false);
+        this.switchIndex();
+        this.getWeapon().setActivate(true);
+    }
+
+    switchIndex() {
+        if (++this.activeIndex >= this.weapons.length) 
+            this.activeIndex = 0;
+    }
 }
 
 export class MandalorianWeaponFactory {

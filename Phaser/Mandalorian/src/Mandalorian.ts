@@ -39,8 +39,7 @@ export class Mandalorian {
         this.mandalorian.x += delta * this.speed * (Number(this.right.some(x => x.isDown)) - Number(this.left.some(x => x.isDown)));
         this.mandalorian.y += delta * this.speed * (Number(this.bottom.some(x => x.isDown)) - Number(this.up.some(x => x.isDown)));
 
-        if (this.mouse.x != undefined || this.mouse.x != undefined)
-            this.mandalorian.setRotation(Phaser.Math.Angle.Between(this.mouse.x, this.mouse.y, this.mandalorian.x, this.mandalorian.y) - Math.PI / 2);
+        this.mandalorian.setRotation(Phaser.Math.Angle.Between(this.mouse.x, this.mouse.y, this.mandalorian.x, this.mandalorian.y) - Math.PI / 2);
     }
 }
 
