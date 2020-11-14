@@ -1,20 +1,33 @@
+import { IMandalorianWeapon } from "./MandalorianWeapons";
 import { Rocket } from "./Rocket";
 import { Scene } from "./Scene";
 
-export class RocketGun {
-    scene: Scene;
+interface IParams {
+    rocketGun: Phaser.GameObjects.Sprite;
+    rocketGroup: Phaser.GameObjects.Group;
+}
+
+export class RocketGun implements IMandalorianWeapon {
+    rocketGun: Phaser.GameObjects.Sprite;
+    rocketGroup: Phaser.GameObjects.Group;
     lastFired = 0;    
 
-    constructor(scene: Scene) {
-        this.scene = scene;
+    constructor({rocketGun, rocketGroup} : IParams) {
+        this.rocketGun = rocketGun;
+        this.rocketGroup = rocketGroup;
     }
 
-    activate(time: number, x1: number, y1: number, x2: number, y2: number) {
+    setActivate(activated: boolean) {
+        this.rocketGun.setVisible(activated);
+    }
+
+    fire(time: number, delta: number, x: number, y: number) {
         if (time > this.lastFired) {
-            var rocket = this.scene.rocketGroup.get() as Rocket;
+            var rocket = this.rocketGroup.get() as Rocket;
 
             if (rocket) {
-                rocket.activate(x1, y1, x2, y2);
+                
+                rocket.activate(this.rocketGun.parentContainer.x, this.rocketGun.parentContainer.y, x, y);
 
                 this.lastFired = time + 600;
             }
@@ -23,11 +36,27 @@ export class RocketGun {
 }
 
 export class RocketGunFactory {
-    static addRocketGroupToScene(scene: Scene) {
-        return scene.add.group({
+
+    static readonly image = 'assets/rocket-gun.png';
+
+    static load(scene: Scene) {
+        scene.load.image({
+            key: RocketGunFactory.image,
+            url: RocketGunFactory.image,
+        });        
+    }
+
+    static create(scene: Scene, container: Phaser.GameObjects.Container) {
+        const rocketGroup = scene.add.group({
             classType: Rocket,
             maxSize: 20,
             runChildUpdate: true
         });
+
+        const rocketGun = scene.add.sprite(12, -7, RocketGunFactory.image).setVisible(false);
+        container.add(rocketGun);
+
+
+        return new RocketGun({rocketGun, rocketGroup});
     }
 }

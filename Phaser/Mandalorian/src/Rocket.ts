@@ -50,9 +50,9 @@ export class Rocket extends Phaser.GameObjects.Image {
             this.setActive(false);
             this.setVisible(false);
             
-            const explosionSprite = this.scene.add.sprite(this.x, this.y, RocketFactory.boomImage);            
+            const explosionSprite = this.scene.add.sprite(this.x, this.y, RocketFactory.explosionSprite);            
             explosionSprite.setScale(10)
-            explosionSprite.play(RocketFactory.explodeKey);
+            explosionSprite.play(RocketFactory.explosionSprite);
             explosionSprite.once(Phaser.Animations.Events.SPRITE_ANIMATION_COMPLETE, () => explosionSprite.destroy());
             
             this.destroy();
@@ -63,30 +63,24 @@ export class Rocket extends Phaser.GameObjects.Image {
 }
 
 export class RocketFactory {
-    static readonly rocketImage = 'rocket';
-    static readonly boomImage = 'boom';
-    static readonly explodeKey = 'explode'
+    static readonly rocketImage = 'assets/rocket.png';
+    static readonly explosionSprite = 'assets/rocket-explosion.png';
 
     static load(scene: Scene) {
         scene.load.image({
             key: RocketFactory.rocketImage,
-            url: 'assets/rocket.png',
+            url: RocketFactory.rocketImage,
         });
 
-        scene.load.spritesheet(RocketFactory.boomImage, 'assets/rocket-explosion.png', { frameWidth: 64, frameHeight: 64, endFrame: 23 });
+        scene.load.spritesheet(RocketFactory.explosionSprite, RocketFactory.explosionSprite, { frameWidth: 64, frameHeight: 64, endFrame: 23 });
     }
 
     static addAnimationToScene(scene: Scene) {
-        var result = scene.anims.create({
-            key: RocketFactory.explodeKey,
-            frames: scene.anims.generateFrameNames(RocketFactory.boomImage),
+        return scene.anims.create({
+            key: RocketFactory.explosionSprite,
+            frames: scene.anims.generateFrameNames(RocketFactory.explosionSprite),
             hideOnComplete: true,
         });
-
-        if (result === false)
-            throw new Error();
-
-        return result;
     }
 }
 
