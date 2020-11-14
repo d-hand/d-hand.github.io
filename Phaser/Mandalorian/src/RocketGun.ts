@@ -8,9 +8,11 @@ interface IParams {
 }
 
 export class RocketGun implements IMandalorianWeapon {
+    static tempMatrix = new Phaser.GameObjects.Components.TransformMatrix();
+
     rocketGun: Phaser.GameObjects.Sprite;
     rocketGroup: Phaser.GameObjects.Group;
-    lastFired = 0;    
+    lastFired = 0;
 
     constructor({rocketGun, rocketGroup} : IParams) {
         this.rocketGun = rocketGun;
@@ -26,17 +28,23 @@ export class RocketGun implements IMandalorianWeapon {
             var rocket = this.rocketGroup.get() as Rocket;
 
             if (rocket) {
+                const [x0, y0] = this.getAbsolutePosition();
                 
-                rocket.activate(this.rocketGun.parentContainer.x, this.rocketGun.parentContainer.y, x, y);
+                rocket.activate(x0, y0, x, y);
 
                 this.lastFired = time + 600;
             }
         }
     }
+
+    getAbsolutePosition() {
+        this.rocketGun.getWorldTransformMatrix(RocketGun.tempMatrix);
+        var d = RocketGun.tempMatrix.decomposeMatrix() as any;        
+        return [d.translateX, d.translateY]
+    }
 }
 
 export class RocketGunFactory {
-
     static readonly image = 'assets/rocket-gun.png';
 
     static load(scene: Scene) {
