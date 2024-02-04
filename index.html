@@ -67,6 +67,10 @@
 				display: block;
 			}
 
+			#panel #content .link.active  {
+				text-decoration: underline;
+			}
+
 			#viewer {
 				position: absolute;
 				border: 0px;
@@ -82,8 +86,16 @@
 		</style>
 
 		<script type="text/javascript">
-			function selectItem() {
-				document.getElementById("viewer").focus();
+			window.onclick = e => {
+				if (e.target.classList.contains("link")) {
+					const content = document.querySelector('#content');
+					const links = content.querySelectorAll(".link");
+					links.forEach(x => x.classList.remove("active"));
+					e.target.classList.add("active");
+
+					document.getElementById("viewer").focus();
+				}
+
 			}
 		</script>
 	</head>
@@ -91,48 +103,45 @@
 		<div id="panel">
 			<h1>Hello World</h1>
 			<div id="content">
-				<div onclick="selectItem();">
-					<h2 data-category="VanJS">VanJS</h2>
-					<a class="link" href="VanJS/Counter/index.html" target="viewer">VanJS</a>
+				<h2>Fun</h2>
+				<a class="link" target="viewer" href="Fun/Mandalorian/dist/index.html" >Mandalorian</a>
 
-					<h2 data-category="CreateWithMySon">CreateWithMySon</h2>
-					<a class="link" href="Phaser/Mandalorian/dist/index.html" target="viewer">Mandalorian</a>
+				<h2>VanJS</h2>
+				<a class="link" target="viewer" href="VanJS/Counter/index.html">Counter</a>
 
-					<h2 data-category="ThreeJS">React</h2>
-					<a class="link" href="React/star/build/index.html" target="viewer">Star</a>	
-					<a class="link" href="React/lifecycle/build/index.html" target="viewer">Mounting And Update Lifecycle</a>
-					<a class="link" href="React/higher-order-component/build/index.html" target="viewer">Higher Order Component</a>	
+				<h2>React</h2>
+				<a class="link" target="viewer" href="React/star/build/index.html" >Star</a>	
+				<a class="link" target="viewer" href="React/lifecycle/build/index.html">Mounting And Update Lifecycle</a>
+				<a class="link" target="viewer" href="React/higher-order-component/build/index.html" >Higher Order Component</a>	
 
-					<h2 data-category="webgl">WebGL</h2>
-					<a class="link" href="WebGL/ColoredPoints/index.html" target="viewer">Colored Points</a>
-					<a class="link" href="WebGL/MultiPoint/index.html" target="viewer">Multi Point</a>
-					<a class="link" href="WebGL/HelloTriangle/index.html" target="viewer">Hello Triangle</a>
-					<a class="link" href="WebGL/HelloQuad/index.html" target="viewer">Hello Quad</a>
-					<a class="link" href="WebGL/TranslatedTriangle/index.html" target="viewer">Translated Triangle</a>
-					<a class="link" href="WebGL/RotatedTriangle/index.html" target="viewer">Rotated Triangle</a>
-					<a class="link" href="WebGL/TransformationMatrix/index.html" target="viewer">Transformation Matrix</a>
-					<a class="link" href="WebGL/AnimateTriangleRotation/index.html" target="viewer">Animate Triangle Rotation</a>
-					<a class="link" href="WebGL/MultiPointSize/index.html" target="viewer">Multi Point Size</a>
-					<a class="link" href="WebGL/MultiPointInterleaved/index.html" target="viewer">Multi Point Interleaved</a>
-					<a class="link" href="WebGL/ColoredTriangle/index.html" target="viewer">Colored Triangle</a>
-					<a class="link" href="WebGL/MultiPointColor/index.html" target="viewer">Multi Point Color</a>
-					<a class="link" href="WebGL/TexturedQuad/index.html" target="viewer">Textured Quad</a>
-					<a class="link" href="WebGL/MultiTextured/index.html" target="viewer">Multi Textured</a>
-					<a class="link" href="WebGL/LookAtTriangles/index.html" target="viewer">Look At Triangles</a>
+				<h2>WebGL</h2>
+				<a class="link" target="viewer" href="WebGL/ColoredPoints/index.html" >Colored Points</a>
+				<a class="link" target="viewer" href="WebGL/MultiPoint/index.html">Multi Point</a>
+				<a class="link" target="viewer" href="WebGL/HelloTriangle/index.html">Hello Triangle</a>
+				<a class="link" target="viewer" href="WebGL/HelloQuad/index.html">Hello Quad</a>
+				<a class="link" target="viewer" href="WebGL/TranslatedTriangle/index.html">Translated Triangle</a>
+				<a class="link" target="viewer" href="WebGL/RotatedTriangle/index.html">Rotated Triangle</a>
+				<a class="link" target="viewer" href="WebGL/TransformationMatrix/index.html">Transformation Matrix</a>
+				<a class="link" target="viewer" href="WebGL/AnimateTriangleRotation/index.html">Animate Triangle Rotation</a>
+				<a class="link" target="viewer" href="WebGL/MultiPointSize/index.html">Multi Point Size</a>
+				<a class="link" target="viewer" href="WebGL/MultiPointInterleaved/index.html">Multi Point Interleaved</a>
+				<a class="link" target="viewer" href="WebGL/ColoredTriangle/index.html">Colored Triangle</a>
+				<a class="link" target="viewer" href="WebGL/MultiPointColor/index.html">Multi Point Color</a>
+				<a class="link" target="viewer" href="WebGL/TexturedQuad/index.html">Textured Quad</a>
+				<a class="link" target="viewer" href="WebGL/MultiTextured/index.html">Multi Textured</a>
+				<a class="link" target="viewer" href="WebGL/LookAtTriangles/index.html">Look At Triangles</a>
+				<a class="link" target="viewer" href="WebGL/Lessons/Lesson-01/index.html">Lesson 01</a>
+				<a class="link" target="viewer" href="WebGL/Lessons/Lesson-02/index.html">Lesson 02</a>
+				<a class="link" target="viewer" href="WebGL/Lessons/Lesson-03/index.html">Lesson 03</a>
+				<a class="link" target="viewer" href="WebGL/Lessons/Lesson-04/index.html">Lesson 04</a>
+				<a class="link" target="viewer" href="WebGL/Lessons/Lesson-05/index.html">Lesson 05</a>
 
-					<a class="link" href="WebGL/Lessons/Lesson-01/index.html" target="viewer">Lesson 01</a>
-					<a class="link" href="WebGL/Lessons/Lesson-02/index.html" target="viewer">Lesson 02</a>
-					<a class="link" href="WebGL/Lessons/Lesson-03/index.html" target="viewer">Lesson 03</a>
-					<a class="link" href="WebGL/Lessons/Lesson-04/index.html" target="viewer">Lesson 04</a>
-					<a class="link" href="WebGL/Lessons/Lesson-05/index.html" target="viewer">Lesson 05</a>
+				<h2>ThreeJS</h2>
+				<a class="link" target="viewer" href="ThreeJS/Camera/index.html">Camera</a>
+				<a class="link" target="viewer" href="ThreeJS/Experiments/Experiment-01/index.html">Experiment 01</a>
 
-					<h2 data-category="ThreeJS">ThreeJS</h2>
-					<a class="link" href="ThreeJS/Experiments/Experiment-01/index.html" target="viewer">Experiment 01</a>
-					<a class="link" href="ThreeJS/Camera/index.html" target="viewer">Camera</a>
-
-					<h2 data-category="ThreeJS">MongoStitch</h2>
-					<a class="link" href="MongoStitch/Blog/index.html" target="viewer">Blog</a>					
-				</div>
+				<h2>MongoStitch</h2>
+				<a class="link" target="viewer" href="MongoStitch/Blog/index.html">Blog</a>					
 			</div>
 		</div>
 		<iframe id="viewer" src="" name="viewer" allowfullscreen="" onmousewheel=""></iframe>
