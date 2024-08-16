@@ -1,0 +1,23 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+#canvas {
+  position: absolute;
+  top: 50%;
+  left: 50%; 
+  translate: -50% -50%; 
+  border: 2px solid black;
+  max-width: 95%;
+  max-height: 95%;
+}
+
+#image {
+  display: none;
+}
+
+.assets {
+  display: none;
+}
