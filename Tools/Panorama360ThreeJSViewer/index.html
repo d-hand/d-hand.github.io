@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="ru">
+  <head>
+    <title>Panorama360ThreeJSViewer</title>
+    <meta charset="utf-8" />
+    <!-- https://timeweb.com/ru/community/articles/metateg-viewport-pochemu-on-vazhen-i-kak-ego-pravilno-ispolzovat -->
+    <meta
+      name="viewport"
+      content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0"
+    />
+    <link rel="stylesheet" href="index.css" />
+  </head>
+  <body>
+    <div id="container"></div>
+    <div id="info">
+      <input type="file" id="file" accept=".jpg" />
+    </div>
+
+    <!-- оставил для примера -->
+    <script type="importmap">
+      {
+        "imports": {
+          "three": "https://cdn.jsdelivr.net/npm/three@0.176.0/build/three.module.js",
+          "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.176.0/examples/jsm/"
+        }
+      }
+    </script>
+    <script src="index.js" type="module"></script>
+  </body>
+</html>
