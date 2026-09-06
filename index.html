@@ -88,7 +88,7 @@
 				font-weight: bold;
 			}
 
-			.display-node {
+			.archive {
 				display: none;
 			}
 		</style>
@@ -106,11 +106,10 @@
 			}
 
 			window.addEventListener("load",() => {
-				if (window.location.hostname === 'd-hand.github.io') {
-				// if (window.location.hostname === '127.0.0.1') {
+				if (window.location.hostname === '127.0.0.1') {
 					const content = document.querySelector('#content');
 					const elems = content.querySelectorAll(".archive");
-					elems.forEach(x => x.style.display = 'none');
+					elems.forEach(x => x.style.display = 'block');
 				}
 			})
 
