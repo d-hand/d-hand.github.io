@@ -87,6 +87,10 @@
 			#panel li b {
 				font-weight: bold;
 			}
+
+			.display-node {
+				display: none;
+			}
 		</style>
 
 		<script type="text/javascript">
@@ -99,67 +103,77 @@
 
 					document.getElementById("viewer").focus();
 				}
-
 			}
+
+			window.addEventListener("load",() => {
+				if (window.location.hostname === 'd-hand.github.io') {
+				// if (window.location.hostname === '127.0.0.1') {
+					const content = document.querySelector('#content');
+					const elems = content.querySelectorAll(".archive");
+					elems.forEach(x => x.style.display = 'none');
+				}
+			})
+
 		</script>
 	</head>
 	<body>
 		<div id="panel">
-			<h1>Hello World</h1>
 			<div id="content">
 				<h2>Html360</h2>
-				<a class="link active" target="viewer" href="360/tyrnyauz_2026/index.html">tyrnyauz !!!</a>
-				<a class="link" target="viewer" href="html360/kislovodsk-berezovka/2026-06-16/DJI_20260625111915_0027_D.html">kislovodsk-berezovka</a>
-				<a class="link" target="viewer" href="html360/viz/2026-08-07/CAM_20260806203211_0013_D.html">viz 2026-08-07</a>
-				<a class="link" target="viewer" href="html360//viz/2026-08-14/CAM_20260813182208_0001_D.html">viz 2026-08-14</a>
-				<a class="link" target="viewer" href="html360/pti-dru/2026-08-23/CAM_20260823100308_0000_D.html">pti-dru</a>
+				<a class="link active" target="viewer" href="./html360/tyrnyauz-put-voina/2026-05-21/CAM_20260521145439_0026_D_1788628822235.html">tyrnyauz</a>
+				<a class="link" target="viewer" href="./html360/kislovodsk-berezovka/2026-06-16/DJI_20260625111915_0027_D.html">kislovodsk-berezovka</a>
+				<a class="link" target="viewer" href="./html360/viz/2026-08-07/CAM_20260806203211_0013_D.html">viz-2026-08-07</a>
+				<a class="link" target="viewer" href="./html360//viz/2026-08-14/CAM_20260813182208_0001_D.html">viz-2026-08-14</a>
+				<a class="link" target="viewer" href="./html360/pti-dru/2026-08-23/CAM_20260823100308_0000_D.html">pti-dru</a>
 
-				<h2>Fun</h2>
-				<a class="link" target="viewer" href="fun/mandalorian/dist/index.html" >Mandalorian</a>
-				<a class="link" target="viewer" href="fun/ascii-art/index.html" >ASCII Art</a>
-				<a class="link" target="viewer" href="fun/camera-2d/step1/index.html" >2DCamera Step1 (Camera)</a>
-				<a class="link" target="viewer" href="fun/camera-2d/step2/index.html" >2DCamera Step2 (TileMap)</a>
-				<a class="link" target="viewer" href="fun/camera-2d/step3/index.html" >2DCamera Step3 (Together)</a>
+				<div class="archive">
+					<h2>Fun</h2>
+					<a class="link" target="viewer" href="./archive/fun/mandalorian/dist/index.html" >Mandalorian</a>
+					<a class="link" target="viewer" href="./archive/fun/ascii-art/index.html" >ASCII Art</a>
+					<a class="link" target="viewer" href="./archive/fun/camera-2d/step1/index.html" >2DCamera Step1 (Camera)</a>
+					<a class="link" target="viewer" href="./archive/fun/camera-2d/step2/index.html" >2DCamera Step2 (TileMap)</a>
+					<a class="link" target="viewer" href="./archive/fun/camera-2d/step3/index.html" >2DCamera Step3 (Together)</a>
 
-				<h2>Tools</h2>
-				<a class="link" target="viewer" href="tools/heic-to-jpg/index.html">Heic To Jpg</a>
-				<a class="link" target="viewer" href="tools/panorama-360-threejs-viewer">Panorama 360 ThreeJS Viewer</a>
+					<h2 class="active">Tools</h2>
+					<a class="link" target="viewer" href="./archive/tools/heic-to-jpg/index.html">Heic To Jpg</a>
+					<a class="link" target="viewer" href="./archive/tools/panorama-360-threejs-viewer">Panorama 360 ThreeJS Viewer</a>
 
-				<h2>VanJS</h2>
-				<a class="link" target="viewer" href="vanjs/counter/index.html">Counter</a>
+					<h2 class="active">VanJS</h2>
+					<a class="link" target="viewer" href="./archive/vanjs/counter/index.html">Counter</a>
 
-				<h2>React</h2>
-				<a class="link" target="viewer" href="react/star/build/index.html" >Star</a>	
-				<a class="link" target="viewer" href="react/lifecycle/build/index.html">Mounting And Update Lifecycle</a>
-				<a class="link" target="viewer" href="react/higher-order-component/build/index.html" >Higher Order Component</a>	
+					<h2 class="active">React</h2>
+					<a class="link" target="viewer" href="./archive/react/star/build/index.html" >Star</a>	
+					<a class="link" target="viewer" href="./archive/react/lifecycle/build/index.html">Mounting And Update Lifecycle</a>
+					<a class="link" target="viewer" href="./archive/react/higher-order-component/build/index.html" >Higher Order Component</a>	
 
-				<h2>WebGL</h2>
-				<a class="link" target="viewer" href="webgl/colored-points/index.html" >Colored Points</a>
-				<a class="link" target="viewer" href="webgl/multi-point/index.html">Multi Point</a>
-				<a class="link" target="viewer" href="webgl/hello-triangle/index.html">Hello Triangle</a>
-				<a class="link" target="viewer" href="webgl/hello-quad/index.html">Hello Quad</a>
-				<a class="link" target="viewer" href="webgl/translated-triangle/index.html">Translated Triangle</a>
-				<a class="link" target="viewer" href="webgl/rotated-triangle/index.html">Rotated Triangle</a>
-				<a class="link" target="viewer" href="webgl/transformation-matrix/index.html">Transformation Matrix</a>
-				<a class="link" target="viewer" href="webgl/animate-triangle-rotation/index.html">Animate Triangle Rotation</a>
-				<a class="link" target="viewer" href="webgl/multi-point-size/index.html">Multi Point Size</a>
-				<a class="link" target="viewer" href="webgl/multi-point-interleaved/index.html">Multi Point Interleaved</a>
-				<a class="link" target="viewer" href="webgl/colored-triangle/index.html">Colored Triangle</a>
-				<a class="link" target="viewer" href="webgl/multi-point-color/index.html">Multi Point Color</a>
-				<a class="link" target="viewer" href="webgl/textured-quad/index.html">Textured Quad</a>
-				<a class="link" target="viewer" href="webgl/multi-textured/index.html">Multi Textured</a>
-				<a class="link" target="viewer" href="webgl/look-at-triangles/index.html">Look At Triangles</a>
-				<a class="link" target="viewer" href="webgl/lessons/01/index.html">Lesson 01</a>
-				<a class="link" target="viewer" href="webgl/lessons/02/index.html">Lesson 02</a>
-				<a class="link" target="viewer" href="webgl/lessons/03/index.html">Lesson 03</a>
-				<a class="link" target="viewer" href="webgl/lessons/04/index.html">Lesson 04</a>
-				<a class="link" target="viewer" href="webgl/lessons/05/index.html">Lesson 05</a>
+					<h2 >WebGL</h2>
+					<a class="link" target="viewer" href="./archive/webgl/colored-points/index.html" >Colored Points</a>
+					<a class="link" target="viewer" href="./archive/webgl/multi-point/index.html">Multi Point</a>
+					<a class="link" target="viewer" href="./archive/webgl/hello-triangle/index.html">Hello Triangle</a>
+					<a class="link" target="viewer" href="./archive/webgl/hello-quad/index.html">Hello Quad</a>
+					<a class="link" target="viewer" href="./archive/webgl/translated-triangle/index.html">Translated Triangle</a>
+					<a class="link" target="viewer" href="./archive/webgl/rotated-triangle/index.html">Rotated Triangle</a>
+					<a class="link" target="viewer" href="./archive/webgl/transformation-matrix/index.html">Transformation Matrix</a>
+					<a class="link" target="viewer" href="./archive/webgl/animate-triangle-rotation/index.html">Animate Triangle Rotation</a>
+					<a class="link" target="viewer" href="./archive/webgl/multi-point-size/index.html">Multi Point Size</a>
+					<a class="link" target="viewer" href="./archive/webgl/multi-point-interleaved/index.html">Multi Point Interleaved</a>
+					<a class="link" target="viewer" href="./archive/webgl/colored-triangle/index.html">Colored Triangle</a>
+					<a class="link" target="viewer" href="./archive/webgl/multi-point-color/index.html">Multi Point Color</a>
+					<a class="link" target="viewer" href="./archive/webgl/textured-quad/index.html">Textured Quad</a>
+					<a class="link" target="viewer" href="./archive/webgl/multi-textured/index.html">Multi Textured</a>
+					<a class="link" target="viewer" href="./archive/webgl/look-at-triangles/index.html">Look At Triangles</a>
+					<a class="link" target="viewer" href="./archive/webgl/lessons/01/index.html">Lesson 01</a>
+					<a class="link" target="viewer" href="./archive/webgl/lessons/02/index.html">Lesson 02</a>
+					<a class="link" target="viewer" href="./archive/webgl/lessons/03/index.html">Lesson 03</a>
+					<a class="link" target="viewer" href="./archive/webgl/lessons/04/index.html">Lesson 04</a>
+					<a class="link" target="viewer" href="./archive/webgl/lessons/05/index.html">Lesson 05</a>
 
-				<h2>ThreeJS</h2>
-				<a class="link" target="viewer" href="threejs/camera/index.html">Camera</a>
-				<a class="link" target="viewer" href="threejs/experiment-01/index.html">Experiment 01</a>
+					<h2>ThreeJS</h2>
+					<a class="link" target="viewer" href="./archive/threejs/camera/index.html">Camera</a>
+					<a class="link" target="viewer" href="./archive/threejs/experiment-01/index.html">Experiment 01</a>
+				</div>
 			</div>
 		</div>
-		<iframe id="viewer" src="360/tyrnyauz_2026/index.html" name="viewer" allowfullscreen="" onmousewheel=""></iframe>
+		<iframe id="viewer" src="./html360/tyrnyauz-put-voina/2026-05-21/CAM_20260521145439_0026_D_1788628822235.html" name="viewer" allowfullscreen="" onmousewheel=""></iframe>
 	</body>
 </html>
