@@ -91,11 +91,26 @@
 			.archive {
 				display: none;
 			}
+
+			@media (max-width: 640px) {
+				#panel {
+					width: 100%;
+				}
+				
+				#viewer {
+					display: none;
+				}
+			}			
+
 		</style>
 
 		<script type="text/javascript">
 			window.onclick = e => {
 				if (e.target.classList.contains("link")) {
+					if (window.innerWidth <= 640 ) {
+						document.location.href = e.target.href;
+					}
+
 					const content = document.querySelector('#content');
 					const links = content.querySelectorAll(".link");
 					links.forEach(x => x.classList.remove("active"));
