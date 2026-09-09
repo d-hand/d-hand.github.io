@@ -60,19 +60,8 @@
 				background: #fafafa;
 			}
 
-			#panel #content {
+			#content {
 				padding: 0px 20px 20px 20px;
-			}
-
-			#panel #content .link {
-				color: #2194CE;
-				text-decoration: none;
-				cursor: pointer;
-				display: block;
-			}
-
-			#panel #content .link.active  {
-				text-decoration: underline;
 			}
 
 			#viewer {
@@ -84,7 +73,15 @@
 				overflow: auto;
 			}
 
-			#panel li b {
+			.link {
+				color: #2194CE;
+				text-decoration: none;
+				cursor: pointer;
+				display: block;
+			}
+
+			.link.active  {
+				text-decoration: underline;
 				font-weight: bold;
 			}
 
@@ -99,6 +96,15 @@
 				
 				#viewer {
 					display: none;
+				}
+
+				.link {
+					margin: 8px 0;
+				}
+
+				.link.active  {
+					text-decoration: none;
+					font-weight: normal;
 				}
 			}			
 
